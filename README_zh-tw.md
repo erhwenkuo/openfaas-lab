@@ -1,23 +1,21 @@
 # OpenFaaS, K3D Quickstart
 
-[Chinese version](README_zh-tw.md)
+[English version](README.md)
 
-This ia a self-paced lab for learning how to build, deploy and run serverless functions with OpenFaas.
-
+這是一個自主學習的lab系列文章，主要學習如何使用OpenFaas來構建，部署和運行serverless的function。
 
 ## OpenFaaS brief introduciton
 
-![](https://camo.githubusercontent.com/cf01eefb5b6905f3774376d6d1ed55b8f052d211/68747470733a2f2f626c6f672e616c6578656c6c69732e696f2f636f6e74656e742f696d616765732f323031372f30382f666161735f736964652e706e67
+![OpenFaas Logo](https://camo.githubusercontent.com/cf01eefb5b6905f3774376d6d1ed55b8f052d211/68747470733a2f2f626c6f672e616c6578656c6c69732e696f2f636f6e74656e742f696d616765732f323031372f30382f666161735f736964652e706e67
 )
 
-OpenFaaS makes it easy for developers to deploy event-driven functions and microservices to Kubernetes without repetitive, boiler-plate coding. 
+OpenFaaS使開發人員可以輕鬆地將事件驅動的function和微服務部署到Kubernetes，而無需重複的去寫許多樣板程式碼。
 
-We can package our code or an existing binary in a Docker image to get a highly scalable endpoint with auto-scaling and metrics.
+我們可以將程式碼或現有的己編譯好的程式打包進Docker映像中，以獲得具有自動縮放和可大規模擴展的function端點(更好的是OpenFaas有內建監控這些function運行狀態的指標)。
 
 ## How to start quickly?
 
-This is a quick and dirty example of how to start [OpenFaas](https://www.openfaas.com/) on [K3S](https://k3s.io/) cluster using [K3D](https://k3d.io/).
-
+這是一個如何使用[K3D](https://k3d.io/)來創建[K3S](https://k3s.io/)群集, 並啟動[OpenFaas](https://www.openfaas.com/)的快速簡單範例。
 
 ### Pre-reqs:
 
@@ -29,13 +27,13 @@ This is a quick and dirty example of how to start [OpenFaas](https://www.openfaa
 
 ### 1. Install **K3D** cluster
 
-Use below command to create a k3d cluster:
+使用以下命令創建k3d集群：
 
 ```bash
 $ k3d cluster create
 ```
 
-You should see similar console output.
+你應該看到類似的console輸出。
 
 ```bash
 INFO[0000] Created network 'k3d-k3s-default'            
@@ -49,17 +47,17 @@ INFO[0011] You can now use it like this:
 kubectl cluster-info
 ```
 
-Above command will create a k3d cluster named "k3s-default".
+上面的命令將在本機上創建一個名為“k3s-default”的k3d集群。
 
 ### 2. Install **OpenFaas** using **arkade** cli
 
-Using [arkade](https://github.com/alexellis/arkade) is the most easy way to to install OpenFaas in kubernetes.
+使用[arkade](https://github.com/alexellis/arkade)是在kubernetes中安裝OpenFaas的一個簡單方法(也是現在官方建議的手法)。
 
 ```bash
 $ arkade install openfaas
 ```
 
-Below information will show once arkade finish install OpenFaas.
+arkade完成安裝OpenFaas後，將顯示以下信息。
 
 ```bash
 Using kubeconfig: /home/witlab/.kube/config
@@ -115,11 +113,13 @@ Thanks for using arkade!
 
 ### Connect to OpenFaas via UI
 
-The OpenFaaS Gateway can be accessed through its REST API via CLI or UI.
+你可以通過CLI或UI來訪問OpenFaaS網關的REST API。
 
 ![](https://raw.githubusercontent.com/openfaas/faas/master/docs/of-workflow.png)
 
 #### 1.Proxy OpenFaaS Gateway service
+
+將網關的網路端口映對到本機的特定網路端口。
 
 ```bash
 # Forward the gateway to your machine
@@ -128,7 +128,7 @@ $ kubectl port-forward -n openfaas svc/gateway 8080:8080 &
 
 #### 2.Retrieve OpenFaas userid & password credential
 
-While arcade CLI install OpenFaaS, it will create a user "admin" with random generated password. Let's export the password as environment variable.
+在`arcade` CLI安裝OpenFaaS時，它將在創建用戶`admin`時隨機生成一個密碼。讓我們將密碼導出到環境變量。
 
 ```bash
 # If basic auth is enabled, you can now log into your gateway:
@@ -141,24 +141,25 @@ $ echo $PASSWORD
 
 #### 3.Login OpenFaas UI
 
-Open a web browser to `localhost:8080`, and enter the credential:
+打開Web瀏覽器，訪問"http://localhost:8080"，然後輸入帳密：
 * User Name: `admin`
 * Password: `{YOUR_PASSWORD}`
 
 ![OpenFaaS UI](docs/openfaas_ui_01.png)
 
-You can try various functions from the OpenFaaS `store` within the UI. For exmaple:
+你可以在OpenFaaS用戶界面裡來嘗試各種範例function。例如我們來部建一個function `figlet`：
+
 1) Click the "Deploy New Function" button
 2) Search for "Figlet" and click it.
 3) Click "Deploy"
 
 ![Deploy Figlet](docs/deploy_figlet.png)
 
-The function should appear on the menu on the left, click it, and wait for the status to change to “Ready”. Then enter "hello" in the “Request Body” field and click Invoke. 
+該function應該會出現在左側菜單上，點擊它，然後等待狀態更改為“Ready”。然後在“Request Body”字段中輸入"hello"，然後點擊“Invoke”。
 
 ![Invoke Figlet](docs/invoke_figlet.png)
 
-You should able to see the result in "Response body":
+你應該能夠在"Response body"中看到執行後的結果:
 
 ```bash
  _          _ _       
@@ -172,13 +173,13 @@ You should able to see the result in "Response body":
 
 ### Connect to OpenFaas via CLI
 
-Make sure you install `faas-cli` below below practice. If you're on MacOS and already have `homebrew` installed then installation is as simple as:
+按照以下做法安裝`faas-cli`。如果你使用的是MacOS，並且已經安裝了`homebrew`，則安裝過程非常簡單:
 
 ```bash
 brew install faas-cli
 ```
 
-For manual installation, you can use the following command:
+對於手動安裝，可以使用以下命令:
 
 ```bash
 curl -sSL https://cli.openfaas.com | sudo sh
@@ -186,7 +187,7 @@ curl -sSL https://cli.openfaas.com | sudo sh
 
 #### Configure faas-cli
 
-Configure the faas-cli to use your local OpenFaaS cluster by using the faas-cli login command. There are two environment variables needed for faas-cli:
+設定faas-cli來連接本機的OpenFaaS集群,需要兩個環境變量:
 * OPENFAAS_UR
 * PASSWORD
 
@@ -197,7 +198,7 @@ $ echo $PASSWORD | faas-cli login --password-stdin
 
 #### List deployed function
 
-To list current deployed functions in OpenFaas:
+列出OpenFaas中當前己部署的function:
 
 ```bash
 $ faas-cli list
@@ -207,6 +208,8 @@ figlet                        	0              	1
 ```
 
 #### Invoke deployed function via CLI
+
+使用`faas-cli`來觸發某一個己部署的function:
 
 ```bash
 $ echo "hello" | faas-cli invoke figlet
@@ -220,11 +223,11 @@ $ echo "hello" | faas-cli invoke figlet
 
 ### Destroy & clean up
 
-To clean up, execute below commands:
+要清理整個lab的環境可執行下列命令:
 
 ```bash
 $ k3d cluster delete
 ```
 
 That's it! You have a runing OpenFaaS to experiement.
-
+就這樣, 你可開始使用OpenFaaS來體驗所謂Serverless或Fn-as-service是怎樣的概念。
