@@ -1,5 +1,7 @@
 # openfaas-workshop
 
+[English version](lab-introduction.md)
+
 這是一個自主學習的workshop (修改自原始版本 [openfaas-workshop](https://github.com/openfaas/workshop)) 主要用於學習如何使用OpenFaaS來構建，部署和運行serverless functions。
 
 這個workshop將重點關注在kubernes上運行OpenFaaS，並提供更多不同語言（包括Python，Java和Golang）的function開發部署範例。

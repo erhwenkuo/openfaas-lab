@@ -1,5 +1,7 @@
 # openfaas-workshop
 
+[Chinses version](lab-introduction_zh-tw.md)
+
 This is a self-paced workshop (modifed version of orgin [openfaas-workshop](https://github.com/openfaas/workshop)) for learning how to build, deploy and run serverless functions with OpenFaaS.
 
 The workshop will focus on running OpenFaaS on kubernes and also providing more examples of different languages (including Python, Java & Golang).

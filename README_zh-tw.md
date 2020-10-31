@@ -233,7 +233,7 @@ $ k3d cluster delete
 
 ### Hey, I am interested
 
-要了解更多有關如何使用OpenFaas來設計/部署serverless functions的信息，可以繼續閱讀[labs introduction](lab-introduction.md)和精心設計的labs：
+要了解更多有關如何使用OpenFaas來設計/部署serverless functions的信息，可以繼續閱讀[labs introduction](lab-introduction_zh-tw.md)和精心設計的labs：
 
 * [Lab 1 - Prepare for OpenFaaS](./lab1.md)
 * [Lab 2 - Test things out](./lab2.md)
