@@ -4,7 +4,6 @@
 
 This ia a self-paced lab for learning how to build, deploy and run serverless functions with OpenFaas.
 
-
 ## OpenFaaS brief introduciton
 
 ![](https://camo.githubusercontent.com/cf01eefb5b6905f3774376d6d1ed55b8f052d211/68747470733a2f2f626c6f672e616c6578656c6c69732e696f2f636f6e74656e742f696d616765732f323031372f30382f666161735f736964652e706e67
@@ -227,4 +226,20 @@ $ k3d cluster delete
 ```
 
 That's it! You have a runing OpenFaaS to experiement.
+
+### Hey, I am interested
+
+To learn more how to use OpenFaas for designing/deploying serverless functions, you can continue with [labs introduction](lab-introduction.md) and each well-craft labs:
+
+* [Lab 1 - Prepare for OpenFaaS](./lab1.md)
+* [Lab 2 - Test things out](./lab2.md)
+* [Lab 3 - Introduction to Functions](./lab3.md)
+* [Lab 4 - Go deeper with functions](./lab4.md)
+* [Lab 5 - Create a GitHub bot](./lab5.md)
+* [Lab 6 - HTML for your functions](./lab6.md)
+* [Lab 7 - Asynchronous Functions](./lab7.md)
+* [Lab 8 - Advanced Feature - Timeouts](./lab8.md)
+* [Lab 9 - Advanced Feature - Auto-scaling](./lab9.md)
+* [Lab 10 - Advanced Feature - Secrets](./lab10.md)
+* [Lab 11 - Advanced feature - Trust with HMAC](./lab11.md) 
 

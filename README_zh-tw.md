@@ -229,5 +229,21 @@ $ echo "hello" | faas-cli invoke figlet
 $ k3d cluster delete
 ```
 
-That's it! You have a runing OpenFaaS to experiement.
 就這樣, 你可開始使用OpenFaaS來體驗所謂Serverless或Fn-as-service是怎樣的概念。
+
+### Hey, I am interested
+
+要了解更多有關如何使用OpenFaas來設計/部署serverless functions的信息，可以繼續閱讀[labs introduction](lab-introduction.md)和精心設計的labs：
+
+* [Lab 1 - Prepare for OpenFaaS](./lab1.md)
+* [Lab 2 - Test things out](./lab2.md)
+* [Lab 3 - Introduction to Functions](./lab3.md)
+* [Lab 4 - Go deeper with functions](./lab4.md)
+* [Lab 5 - Create a GitHub bot](./lab5.md)
+* [Lab 6 - HTML for your functions](./lab6.md)
+* [Lab 7 - Asynchronous Functions](./lab7.md)
+* [Lab 8 - Advanced Feature - Timeouts](./lab8.md)
+* [Lab 9 - Advanced Feature - Auto-scaling](./lab9.md)
+* [Lab 10 - Advanced Feature - Secrets](./lab10.md)
+* [Lab 11 - Advanced feature - Trust with HMAC](./lab11.md) 
+
