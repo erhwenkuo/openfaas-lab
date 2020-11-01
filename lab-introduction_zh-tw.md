@@ -23,7 +23,7 @@
 
 ## Requirements:
 
-我們將逐步介紹如何在[Lab 1](./lab1.md)中安裝這些要求。請在參加講師指導的workshop之前完成[Lab 1](./lab1.md)。至少你應該安裝Docker並預先拉下[OpenFaaS映像檔](./lab1.md#Pre-pull-the-system-images)到本機上。
+我們將逐步介紹如何在[Lab 1](./lab1_zh-tw.md)中安裝這些要求。請在參加講師指導的workshop之前完成[Lab 1](./lab1_zh-tw.md)。至少你應該安裝Docker並預先拉下[OpenFaaS映像檔](./lab1_zh-tw.md#Pre-pull-the-system-images)到本機上。
 
 * 函數將用Python編寫（未來將包含Java與Golang的版本），因此你應具備基本寫程式與一些腳本編寫的經驗和能力
 * 安裝推薦的代碼編輯器/ IDE [VSCode](https://code.visualstudio.com/download) / IDE [Pycharm](https://www.jetbrains.com/pycharm/)
@@ -63,12 +63,12 @@ Docker:
 
 ## [Lab 4 - Go deeper with functions](./lab4_zh-tw.md)
 
-* [通過環境變量注入配置](lab4.md#inject-configuration-through-environmental-variables)
+* [通過環境變量注入配置](lab4_zh-tw.md#inject-configuration-through-environmental-variables)
 　* 使用yaml檔來進行function部署
 　* 動態使用HTTP context - querystring / headers 等等
 * 安全增強: 唯讀的檔案系統
-* [利用日誌記錄](lab4.md#making-use-of-logging)
-* [創建工作流](lab4.md#create-workflows)
+* [利用日誌記錄](lab4_zh-tw.md#making-use-of-logging)
+* [創建工作流](lab4_zh-tw.md#create-workflows)
   * 在客戶端進行function的串連
   * 從另一個調用一個函數
 
