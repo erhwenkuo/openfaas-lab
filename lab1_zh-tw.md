@@ -1,5 +1,7 @@
 # Lab 1 - Prepare for OpenFaaS
 
+[English version](lab1.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 OpenFaaS需要Kubernetes(https://kubernetes.io)集群才能運行。無論是在本機電腦上還是在雲中，你都可以使用單節點群集或多節點群集來安裝OpenFaaS。

@@ -1,5 +1,7 @@
 # Lab 1 - Prepare for OpenFaaS
 
+[Chinses version](lab1_zh-tw.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 OpenFaaS requires a [Kubernetes](https://kubernetes.io) cluster to operate. You can use a single-node cluster or a multi-node cluster, whether that's on your laptop or in the cloud.

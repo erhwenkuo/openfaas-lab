@@ -1,5 +1,7 @@
 # Lab 2 - Test things out
 
+[Chinses version](lab2_zh-tw.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 Before starting this lab, create a new folder for your files:

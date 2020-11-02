@@ -1,5 +1,7 @@
 # Lab 2 - Test things out
 
+[English version](lab2.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 在開始這個lab之前，請為lab2在本機上創建一個新文件夾:
