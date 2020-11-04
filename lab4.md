@@ -1,5 +1,7 @@
 # Lab 4 - Go deeper with functions
 
+[Chinses version](lab4_zh-tw.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 Before starting this lab, create a new folder for your files. As this lab builds on an earlier lab make a copy of lab3:

@@ -1,5 +1,7 @@
 # Lab 4 - Go deeper with functions
 
+[English version](lab4.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 在開始本lab之前，請為在本機創建一個新檔案夾。由於本lab是在較早的lab的基礎上進行的，因此請複製lab3:
@@ -555,6 +557,6 @@ $ echo -n "California is great, it's always sunny there." | faas-cli invoke dete
 That was probably positive
 ```
 
-注意：你不需要修改或更改`SentimentAnalysis`函數的程式碼，我們已經在OpenFaaS部署了它，而這個範例是模擬其它function通過API網關來訪問它。
+注意：你不需要修改或更改`SentimentAnalysis`函數的程式碼，我們在前幾個步驟已經在OpenFaaS部署了它，而這個範例是模擬其它function通過API網關來訪問它。
 
-下一步 >> [Lab 5](lab5.md).
+下一步 >> [Lab 5](lab5_zh-tw.md).
