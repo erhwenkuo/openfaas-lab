@@ -64,8 +64,8 @@ Docker:
 ## [Lab 4 - Go deeper with functions](./lab4_zh-tw.md)
 
 * [通過環境變量注入配置](lab4_zh-tw.md#inject-configuration-through-environmental-variables)
-　* 使用yaml檔來進行function部署
-　* 動態使用HTTP context - querystring / headers 等等
+  * 使用yaml檔來進行function部署
+  * 動態使用HTTP context - querystring / headers 等等
 * 安全增強: 唯讀的檔案系統
 * [利用日誌記錄](lab4_zh-tw.md#making-use-of-logging)
 * [創建工作流](lab4_zh-tw.md#create-workflows)
