@@ -1,27 +1,27 @@
 # Lab 5 - Create a GitHub bot
 
-[Chinses version](lab5_zh-tw.md)
+[English version](lab5.md)
 
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
-Before starting this lab, create a new folder for your files:
+在開始本lab之前，請為在本機創建一個新檔案夾 `lab5`:
 
 ```
 $ mkdir -p lab5 \
    && cd lab5
 ```
 
-We're going to use OpenFaaS functions to create a GitHub bot named `issue-bot`.
+我們將使用OpenFaaS的function模版創建一個名為`issue-bot`的GitHub bot。
 
-The job of issue-bot is to triage new issues by analysing the sentiment of the "description" field, it will then apply a label of *positive* or *review*. This will help the maintainers with their busy schedule so they can prioritize which issues to look at first.
+`issue-bot`的工作是通過分析在GitHub repo上所發出的"Issue"訊息裡"description"欄位的內容來做情感分析，然後將其標記為*positive*或*review*。這將有助於繁忙地repo維護人員有效安排工作規劃，經過標記之後他們可以優先考慮要首先解決的問題。
 
 ![](docs/lab5/issue-bot.png)
 
 ## Get a GitHub account
 
-* Sign up for a [GitHub account](https://github.com) if you do not already have one.
+* 如果你還沒有一個[GitHub帳戶](https://github.com)，請註冊一個。
 
-* Create a new repository and call it *bot-tester*
+* 創建一個新的專案源碼存儲庫並將其命名為*bot-tester*。
 
 ![](docs/lab5/github_new_repo.png)
 
@@ -29,7 +29,7 @@ The job of issue-bot is to triage new issues by analysing the sentiment of the "
 
 ![](docs/lab5/github_new_repo3.png)
 
-> Note: we will only use this repository as a testing ground for creating Issues. You don't need to commit any code there.
+> 注意：我們只會將此存儲庫用作創建`Issue`的測試平台。你無需在此提交任何程式碼。
 
 ## Create a webhook receiver `issue-bot`
 
@@ -39,7 +39,7 @@ $ faas-cli new --lang python3 issue-bot --prefix="<your-docker-username-here>"
 
 ![](docs/lab5/issue-bot-python.png)
 
-Now edit the function's YAML file `issue-bot.yml` and add an environmental variable of `write_debug: true`:
+現在，編輯該function的YAML文件`issue-bot.yml`並添加一個環境變數`write_debug：true`：
 
 ```
 provider:
@@ -57,7 +57,7 @@ functions:
 
 ![](docs/lab5/issue-bot-yaml-modify.png)
 
-The `handler.py` is like a `echo` function:
+此時的`handler.py`就像是一個`echo` function:
 
 ```python
 def handle(req):
@@ -69,7 +69,7 @@ def handle(req):
     return req
 ```
 
-* Build, push and deploy the function with
+* 使用以下命令構建，推送和部署功能
 
 ```
 $ faas-cli up -f ./issue-bot.yml
@@ -131,11 +131,12 @@ $ kubectl logs deploy/issue-bot -n openfaas-fn
 
 ## Set up a tunnel with ngrok
 
-You will need to receive incoming webhooks from GitHub. In production you will have a clear route for incoming traffic but within the constraints of a workshop we have to be creative.
+你將需要從GitHub接收傳入的Webhooks。在生產環境中，你將為從互聯網進入的流量提供一條清晰的安全的route，但在workshop開發環境的網路限制相當的多，因此我們必需要發揮一點創造力。
 
-We are going to use [ngrok](https://ngrok.com/) to build a http tunnel with out local function. Follow the [Download & setup ngrok](https://ngrok.com/download) to install `ngrok` on local machine. 
+我們將使用[ngrok](https://ngrok.com/)構建一條可連通互聯網進入的流量的安全http通道(tunneling)。請按照[Download & setup ngrok](https://ngrok.com/download)上的指示在本地計算機上安裝`ngrok`。
 
-Open a new Terminal and type in:
+打開一個新的終端並輸入:
+
 ```
 $ ngrok http 8080
 
@@ -155,13 +156,13 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 ![](docs/lab5/ngrok-session.png)
 
-`ngrok` provide free http network tunning, however each session will only last 8 hours and URL for traffic forwarding will change each time you execute `ngrok`.
+`ngrok`提供免費的http網絡調試的通道，但是每個通道網路session僅能持續8個小時，另外每次重新執行`ngrok`時，流量轉發的URL都會改變。
 
-Base on console out of `ngrok`, you should be able to know the public URL(i.e: http://134dbb8d227d.ngrok.io) for web hooking.
+基於`ngrok`的控制台，你應該能夠知道用於web hook的公共URL(範例: http://134dbb8d227d.ngrok.io)。
 
-> Note: the URL `ngrok` provided will be changed, make sure you find your own URL!
+> 注意：`ngrok`提供的URL是動態的，請確保你找到自己的URL!
 
-Testing the `ngrok` traffic tunneling using `curl`:
+使用`curl`測試`ngrok`所提供的http通道:
 
 ```sh
 curl -X POST http://134dbb8d227d.ngrok.io/function/issue-bot -d '{"test":"hello from ngrok"}'
@@ -171,15 +172,15 @@ curl -X POST http://134dbb8d227d.ngrok.io/function/issue-bot -d '{"test":"hello 
 
 ## Receive webhooks from GitHub
 
-Log back into GitHub and navigate to your repository *bot-tester*
+重新登錄GitHub並導航到你的存儲庫*bot-tester*。
 
-Click *Settings* -> *Webhooks* -> *Add Webhook*
+點擊 *Settings* -> *Webhooks* -> *Add Webhook*
 
 ![](docs/lab5/github-settings.png)
 
 ![](docs/lab5/github-webhooks.png)
 
-Now enter the URL you were given from `ngrok` adding `/function/issue-bot` to the end, for example:
+現在輸入你從`ngrok`得到的URL，在末尾添加`/function/issue-bot`，例如:
 
 ```
 http://134dbb8d227d.ngrok.io/function/issue-bot
@@ -187,13 +188,13 @@ http://134dbb8d227d.ngrok.io/function/issue-bot
 
 ![](docs/lab5/github-add-webhook.png)
 
-* For *Content-type* select: *application/json*
+* 對於 *Content-type* 選擇: *application/json*
 
-* Leave *Secret* blank for now.
+* 暫時對 *Secret* 放空白
 
-* And select "Let me select individual events"
+* 選擇 "Let me select individual events"
 
-* For events select **Issues** and **Issue comment**
+* 選擇兩種events: **Issues** 與 **Issue comment**
 
 ![](docs/lab5/github-webhook-issue.png)
 
@@ -201,13 +202,13 @@ http://134dbb8d227d.ngrok.io/function/issue-bot
 
 ## Check it worked
 
-Now go to GitHub and create a new issue. Type "test" for the title and description.
+現在轉到GitHub並創建一個新`Issue`。輸入"test"作為標題和描述。
 
 ![](docs/lab5/github-create-issue.png)
 
 ![](docs/lab5/github-create-issue2.png)
 
-Check how many times the function has been called - this number should be at least `1`.
+檢查該function被調用多少次-此數字應至少為1。
 
 ```
 $ faas-cli list
@@ -215,29 +216,29 @@ Function    Invocations
 issue-bot   2
 ```
 
-Each time you create an issue the count will increase due to GitHub's API invoking the function.
+每次你創建`Issue`時，GitHub的API會經由web hook來調用該function，因此調用計數將增加。
 
-You can see the payload sent via GitHub by typing in:
+你可以通過鍵入以下內容查看通過GitHub發送的payload:
 
 ```sh
 $ kubectl logs deployment/issue-bot -n openfaas-fn
 ```
 ![](docs/lab5/github-issue-event-log.png)
 
-The GitHub Webhooks page will also show every message sent under "Recent Deliveries", you can replay a message here and see the response returned by your function.
+GitHub Webhooks頁面還將在"Recent Deliveries"下顯示發送的所有事件消息，你可以在此處重送消息並查看function返回的響應。
 
 ![](docs/lab5/github-issue-delivery.png)
 
 ### Deploy SentimentAnalysis function
 
-In order to use this issue-bot function, you will need to deploy the SentimentAnalysis function first.
-This is a python function that provides a rating on sentiment positive/negative (polarity -1.0-1.0) and subjectivity provided to each of the sentences sent in via the TextBlob project.
+為了完成`issue-bot` function，你將需要先部署`SentimentAnalysis`的function。
+這是一個python函數，可為針對每個句子提供的積極/消極(極性-1.0 ~ 1.0)和主觀性分析。
 
-If you didnt do so in [Lab 4](./lab4.md) you can deploy "SentimentAnalysis" from the **Function Store**
+如果你沒有在[Lab 4](./lab4_zh-tw.md)中完成`SentimentAnalysis`的部署，那麼可以從**Function Store**中部署`SentimentAnalysis`。
 
 ![](docs/lab5/sentiment-analysis.png)
 
-Test `sentimentanalysis` function:
+測試 `sentimentanalysis` function:
 
 ```
 $ echo -n "I am really excited to participate in the OpenFaaS workshop." | faas-cli invoke sentimentanalysis
@@ -251,7 +252,7 @@ $ echo -n "The hotel was clean, but the area was terrible" | faas-cli invoke sen
 
 ### Update the `issue-bot` function
 
-Open `issue-bot/handler.py` and replace the template with this code:
+編輯 `issue-bot/handler.py` 並修改程式碼如下:
 
 ```python
 import requests, json, os, sys
@@ -282,53 +283,54 @@ def handle(req):
 
 ![](docs/lab5/issue-bot-python-ide.png)
 
-Update your `requirements.txt` file with the requests module for HTTP/HTTPs:
+在`requirements.txt`文件加入用於叫用HTTP/HTTPs API的`requests`模組:
 
 ```
 requests
 ```
 
-Add `gateway_hostname` environment variable to `issue-bot.yml` file and set its value to  `gateway.openfaas.svc.cluster.local` for Kubernetes.
+在`issue-bot.yml`文件中添加`gateway_hostname`環境變數，並將值設置為`gateway.openfaas`。
+
 ``` 
     ...
     environment:
-      gateway_hostname: "gateway.openfaas.svc.cluster.local"
+      gateway_hostname: "gateway.openfaas"
     ...
 ```
 
 ![](docs/lab5/issue-bot-yaml-modify2.png)
 
-The following line from the code above posts the GitHub Issue's title and body to the `sentimentanalysis` function as text. The response will be in JSON format.
+以下的程式碼將GitHub `Issue`的標題和正文作為文本發佈到`sentimentanalysis`函數中, 響應結果是JSON格式。
 
 ```python
 res = requests.post('http://' + gateway_hostname + ':8080/function/sentimentanalysis', data=payload["issue"]["title"]+" "+payload["issue"]["body"])
 ```
 
-* Build and deploy
+* 構建和部署
 
-Use the CLI to build and deploy the function:
+使用CLI構建和部署function:
 
 ```
 $ faas-cli up -f issue-bot.yml
 ```
 
-Now create a new issue in the `bot-tester` repository. GitHub will respond by sending a JSON payload to your function via the Ngrok tunnel we set up at the start.
+現在`bot-tester` repository創建一個新的`issue`, GitHub將通過我們在一開始就設置的`ngrok`通道向你的函數發送`issue`事件。
 
 ![](docs/lab5/github-issue-test.png)
 
 ![](docs/lab5/github-issue-test3.png)
 
-You can view the request/response directly on GitHub - navigate to *Settings* -> *Webhook* as below:
+你可以直接在GitHub上查看request/response - 導航到 *Settings* -> *Webhook*，如下所示:
 
 ![](docs/lab5/issue-bot-function-result.png)
 
 ## Respond to GitHub
 
-The next step will be for us to apply a label of `positive` or `review`, but because this action involves writing to the repository we need to get a *Personal Access Token* from GitHub.
+下一步將是我們對每一個Github的`issue`給了對予`positive`或`review`的標籤，但是由於此操作涉及寫入repository，因此我們需要從GitHub獲取*Personal Access Token*。
 
 ### Create a Personal Access Token for GitHub
 
-Go to your *GitHub profile* -> *Settings/Developer settings* -> *Personal access tokens* and then click *Generate new token*.
+導航到 *GitHub profile* -> *Settings/Developer settings* -> *Personal access tokens* 然然點擊 *Generate new token*。
 
 ![](docs/lab5/github-token-setting.png)
 
@@ -336,15 +338,15 @@ Go to your *GitHub profile* -> *Settings/Developer settings* -> *Personal access
 
 ![](docs/lab5/github-developer-setting3.png)
 
-Tick the box for "repo" to allow access to your repositories
+勾選"repo"，以允許訪問你的repository:
 
 ![](docs/lab5/github-developer-setting4.png)
 
-Click the "Generate Token" button at the bottom of the page
+點擊頁面底部的"Generate Token"按鈕:
 
 ![](docs/lab5/github-pat.png)
 
-Create a file called `env.yml` in the directory where your `issue-bot.yml` file is located with the following content:
+在你的`issue-bot.yml`文件所在的目錄中創建一個名為`env.yml`的文件，其內容如下:
 
 ```yaml
 environment:
@@ -353,9 +355,9 @@ environment:
 
 ![](docs/lab5/env-yml.png)
 
-Update the `auth_token` variable with your token from GitHub.
+使用來自GitHub的token並設置到`auth_token`變數。
 
-Now update your issue-bot.yml file and tell it to use the `env.yml` file:
+現在更新你的`issue-bot.yml`文件，並告訴它使用`env.yml`文件:
 
 ```yaml
 provider:
@@ -377,22 +379,17 @@ functions:
 
 ![](docs/lab5/issue-bot-yml2.png)
 
-> Note: If you're running on Kubernetes, suffix the `gateway_hostname` with `openfaas` namespace:
-> ```
-> gateway_hostname: "gateway.openfaas"
-> ```
+> `positive_threshold`環境變數是用於微調Issue是否獲得`positive`或`review`標籤的閥值。
 
-> The `positive_threshold` environmental variable is used to fine-tune whether an Issue gets the `positive` or `review` label.
+將敏感信息放置在外部文件(如env.yml)中，以便可以將其包含在.gitignore文件中，這將有助於防止該信息存儲在公共Git存儲庫中。
 
-Any sensitive information is placed in an external file (i.e. `env.yml`) so that it can be included in a `.gitignore` file which will help prevent that information getting stored in a public Git repository.
-
-OpenFaaS also supports the use of native Docker and Kubernetes secrets, details can be found in [Lab 10](lab10.md)
+OpenFaaS還支持使用Kubernetes secrets來儲存敏感信息, 詳細信息請參見[Lab 10](lab10_zh-tw.md)。
 
 ### Apply labels via the GitHub API
 
-You can use the API to perform many different tasks, the [documentation is available here](https://github.com/PyGithub/PyGithub).
+你可以使用[PyGithub](https://github.com/PyGithub/PyGithub) API​​執行許多不同有關Github repository的任務。
 
-Here's a sample of Python code that we could use to apply a label, but you do not add it to your function yet.
+這是我們要用來apply標籤的Python範例程式碼:
 
 ```python
 issue_number = 1
@@ -404,11 +401,11 @@ repo = g.get_repo(repo_name)
 issue = repo.get_issue(issue_number)
 ```
 
-This library for GitHub is provided by the community and is not official, but appears to be popular. It can be pulled in from `pip` through our `requirements.txt` file.
+[PyGithub](https://github.com/PyGithub/PyGithub)函式庫是由社群所提供, 將它加入到我們的`requirements.txt`文件。
 
 ## Complete the function
 
-* Update your `issue-bot/requirements.txt` file and add a line for `PyGithub`
+* 更新你的 `issue-bot/requirements.txt` 檔案並加入`PyGithub`模組
 
 ```
 requests
@@ -417,7 +414,7 @@ PyGithub
 
 ![](docs/lab5/issue-bot-requirements.png)
 
-* Open `issue-bot/handler.py` and replace the code with this:
+* 編輯 `issue-bot/handler.py` 如下所示:
 
 ```python
 import requests, json, os, sys
@@ -479,34 +476,32 @@ def apply_label(polarity, issue_number, repo, positive_threshold):
 
 ![](docs/lab5/issue-bot-python-final.png)
 
-> The source code is also available at [issue-bot/bot-handler/handler.py](./issue-bot/bot-handler/handler.py)
+* 構建和部署
 
-* Build and deploy
-
-Use the CLI to build and deploy the function:
+使用CLI構建和部署function:
 
 ```
 $ faas-cli up -f issue-bot.yml
 ```
 
-Now try it out by creating some new issues in the `bot-tester` repository. Check whether `positive` and `review` labels were properly applied and consult the GitHub Webhooks page if you are not sure that the messages are getting through or if you suspect an error is being thrown.
+現在通過在`bot-tester` repository中創建一些新`issue`來進行試驗。如果不確定Github的事件消息是否己經通過你的function或懷疑有所錯誤，你可檢查`positive`和`review`標籤是否正確貼標或是查閱GitHub Webhooks頁面來追蹤事件歷程。
 
-Let's create an issue with "negative" statement:
+讓我們用"negative"語句來創建一個`issue`:
 
 ![](docs/lab5/github-issue-final.png)
 
-The result from our `issue-bot`:
+來自我們的`issue-bot`的結果:
 
 ![](docs/lab5/issue-bot-labeling.png)
 
-Let's create an issue with "positive" statement:
+讓我們用"positive"語句來創建一個`issue`:
 
 ![](docs/lab5/github-issue-positive.png)
 
-The result from our `issue-bot`:
+來自我們的`issue-bot`的結果:
 
 ![](docs/lab5/issue-bot-labeling2.png)
 
-> Note: If the labels don't appear immediately, first try refreshing the page
+> 注意：如果標籤沒有立即顯示，請先嘗試刷新頁面
 
-Now move on to [Lab 6](lab6.md).
+下一步 >> [Lab 6](lab6_zh-tw.md)

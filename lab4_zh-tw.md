@@ -559,4 +559,4 @@ That was probably positive
 
 注意：你不需要修改或更改`SentimentAnalysis`函數的程式碼，我們在前幾個步驟已經在OpenFaaS部署了它，而這個範例是模擬其它function通過API網關來訪問它。
 
-下一步 >> [Lab 5](lab5_zh-tw.md).
+下一步 >> [Lab 5](lab5_zh-tw.md)
