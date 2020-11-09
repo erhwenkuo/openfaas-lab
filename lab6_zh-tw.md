@@ -1,10 +1,10 @@
 # Lab 6 - HTML for your functions
 
-[Chinses version](lab6_zh-tw.md)
+[English version](lab6.md)
 
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
-Before starting this lab, create a new folder for your files:
+在開始本lab之前，請在本機創建一個新檔案夾 `lab6`:
 
 ```
 $ mkdir -p lab6 \
@@ -13,7 +13,7 @@ $ mkdir -p lab6 \
 
 ## Generate and return basic HTML from a function
 
-Functions can return HTML and also set the `Content-Type` to `text/html`. Hence the HTML returned by the function can be rendered via a browser. Let's create a simple function who generates and returns a basic HTML.
+OpenFaas的function可以返回HTML內容，也可以將`Content-Type`設置為`text/html`。因此，可以通過瀏覽器呈現函數返回的HTML。讓我們創建一個簡單的function，該function生成並返回基本的HTML。
 
 ```
 $ faas-cli new --lang python3 show-html --prefix="<your-docker-username-here>"
@@ -21,7 +21,7 @@ $ faas-cli new --lang python3 show-html --prefix="<your-docker-username-here>"
 
 ![](docs/lab6/create_new_function.png)
 
-Edit `handler.py`:
+編輯 `handler.py`:
 
 ```python
 def handle(req):
@@ -37,9 +37,9 @@ def handle(req):
 
 ![](docs/lab6/show-html-python.png)
 
-This will return HTML to the caller.  One more thing we should do is to set the `Content-Type` of the response. We are 100% sure that this function will return an HTML so the `Content-Type` should always be `text/html`. We can set this by taking advantage of the `environment` section of the `show-html.yml` file.
+這個function會將HTML返回給調用方。我們要做的另一件事是設置響應的`Content-Type`。我們必需要確保此function將返回HTML內容，因此`Content-Type` 應該始終為`text/html`。我們可以利用`show-html.yml`文件的`environment`區塊來進行設置。
 
-Edit `show-html.yml`:
+編輯 `show-html.yml`:
 
 ```yaml
 provider:
@@ -58,9 +58,9 @@ functions:
 
 ![](docs/lab6/modify-show-html-yml.png)
 
-The `content_type` key inside `environment` will set the `Content-Type` of the response.
+在`environment`下的`content_type`是用來設定function回應給呼叫端的`Content-Type`。
 
-Now build, push and deploy the function:
+現在構建，推送和部署function:
 
 ```sh
 $ faas-cli up -f show-html.yml
@@ -105,19 +105,19 @@ URL: http://127.0.0.1:8080/function/show-html
 
 ![](docs/lab6/describe-show-html.png)
 
-Use a browser to open the URL:
+使用瀏覽器打開URL:
 
 ![](docs/lab6/show-html-browser.png)
 
-The HTML should be properly rendered.
+HTML應該正確呈現。
 
 ## Read and return a static HTML file from disk
 
-Typically, when you serve HTML you have a static HTML file upfront. Let's see how we can pack HTML file inside the function and serve the contents from the HTML file.
+通常，在提供HTML時，你會預先從指定的檔案夾中取得一個靜態HTML文件。讓我們看看如何將HTML文件打包到function中並提供HTML的內容。
 
-First, let's create a HTML file:
+首先，讓我們創建一個HTML文件:
 
-Create a directory called `html` and put a file called `new.html` so that the structure looks like as follows:
+創建一個名為`html`的目錄，並放置一個名為`new​​.html`的文件，function專案目錄結構如下所示:
 
 ```
 ├── show-html
@@ -129,7 +129,7 @@ Create a directory called `html` and put a file called `new.html` so that the st
 └── show-html.yml
 ```
 
-Edit `new.html` :
+編輯 `new.html` :
 
 ```html
 <!DOCTYPE html>
@@ -146,7 +146,7 @@ Edit `new.html` :
 
 ![](docs/lab6/new-html.png)
 
-Now change your `handler.py` to the following:
+現在將你的`handler.py`更改為以下內容:
 
 ```python
 import os
@@ -169,19 +169,19 @@ def handle(req):
 
 ![](docs/lab6/show-html-ide2.png)
 
-Now build, push and deploy the function:
+現在構建，推送和部署function:
 
 ```
 $ faas-cli up -f show-html.yml
 ```
 
-Open your browser and access http://127.0.0.1:8080/function/show-html. You should see a "Here's a new page!" HTML page rendered in the browser.
+打開瀏覽器並訪問`http://127.0.0.1:8080/function/show-html`。你應該看到"Here's a new page!"在瀏覽器中呈現的HTML頁面。
 
 ![](docs/lab6/new-page.png)
 
-Now we're going to add a path to the function URL.
+現在，我們將使用函數URL的路徑來判斷要回覆的網頁。
 
-Inside `html` folder add new `list.html` file with this content:
+在`html`文件夾中添加具有以下內容的新`list.html`文件:
 
 ```html
 <!DOCTYPE html>
@@ -203,7 +203,7 @@ Inside `html` folder add new `list.html` file with this content:
 
 ![](docs/lab6/list-html.png)
 
-Edit your `handler.py` to the following:
+編輯你的`handler.py`為以下內容:
 
 ```python
 import os
@@ -225,15 +225,14 @@ def handle(req):
 
 ![](docs/lab6/handler-with-path.png)
 
-Build, push and deploy the function:
+構建，推送和部署function:
 
 ```
 $ faas-cli up -f show-html.yml
 ```
+現在，打開你的網頁`http://127.0.0.1:8080/function/show-html/new`或`http://127.0.0.1:8080/function/show-html/list`。
 
-Now open your web page on http://127.0.0.1:8080/function/show-html/new or http://127.0.0.1:8080/function/show-html/list.
-
-This will output:
+你應該看到網頁輸出:
 
 ```html
 <h2>Here's a new page!</h2>
@@ -241,7 +240,7 @@ This will output:
 
 ![](docs/lab6/show-html-new.png)
 
-and
+或是:
 
 ```html
 <h2>This is a list!</h2>
@@ -256,13 +255,13 @@ and
 
 ## Read the query string and return different HTML
 
-Now that we've understood how to serve html via functions, let's dynamically change the HTML to serve via query strings. As we learned in [Lab 4](./lab4.md), query strings can be retrieved via an environment variable called `Http_Query`. Suppose we made a query that looks like this:
+現在，我們已經了解瞭如何通過function提供html，讓我們通過query string來動態地提供HTML。正如我們在[Lab 4](./lab4_zh-tw.md)中所了解的那樣，query string可以通過名為`Http_Query`的環境變數來檢索。假設我們想進行如下查詢:
 
  http://127.0.0.1:8080/function/show-html?action=new
 
-The query string is `action=new`, hence the value of `Http_Query` would be `action=new`. We can also use the `parse_qs` function from the `urllib.parse` package and easily parse this query string.
+query string是`action=new`, 因此`Http_Query`的值將是`action=new`。我們也可以使用`urllib.parse`包中的`parse_qs`函數來輕鬆解析該query string。
 
-The structure of the directory of our function looks like this:
+我們function的目錄結構如下:
 
 ```
 ├── show-html
@@ -275,8 +274,7 @@ The structure of the directory of our function looks like this:
 └── show-html.yml
 ```
 
-
-Change your `handler.py`: 
+修改你的`handler.py`: 
 
 ```python
 import os
@@ -303,31 +301,31 @@ def handle(req):
 
 ![](docs/lab6/show-html-querystring.png)
 
-Now build, push and deploy the function:
+現在構建，推送和部署function:
 
 ```
 $ faas-cli up -f show-html.yml
 ```
 
-Open your browser and first access:
+打開瀏覽器並進行訪問:
 
 http://127.0.0.1:8080/function/show-html?action=new
 
 ![](docs/lab6/new-html-qs.png)
 
-You should see the "Here's a new page!" as you saw in the previous section. Now access:
+你應該看到"Here's a new page!"如你在上一節中看到的。現在訪問:
 
 http://127.0.0.1:8080/function/show-html?action=list
 
 ![](docs/lab6/list-html-qs.png)
 
-You should see a HTML showing a list.
+你應該看到顯示一個簡表列表的HTML。
 
 ## Collaborate with other functions
 
-Finally, let's see how we can collaborate with another function (e.g. the *figlet* function) from the HTML function by taking advantage of JavaScript and Ajax.
+最後，讓我們看看如何利用JavaScript和Ajax與另一個function（例如 *figlet* function）進行協作。
 
-First of all, let's create another HTML file called `figlet.html`. So the structure should look like the following now:
+首先，讓我們創建另一個名為`figlet.html`的HTML文件。因此，檔案結構現在應如下所示:
 
 ```
 ├── show-html
@@ -341,7 +339,7 @@ First of all, let's create another HTML file called `figlet.html`. So the struct
 └── show-html.yml
 ```
 
-Edit`figlet.html`:
+編輯 `figlet.html`:
 
 ```html
 <!DOCTYPE html>
@@ -397,35 +395,35 @@ Edit`figlet.html`:
 
 ![](docs/lab6/figlet-html.png)
 
-Don't worry if you don't understand JavaScript much. All this page does is:
+如果你不太了解JavaScript，請不要擔心。該頁面所做的全部是:
 
-* Type text inside the `input`
-* Press the `Generate` button
-* Create an Ajax request to the *figlet* function endpoint (`/function/figlet`)
-* Apply the result to the `textarea`
+* 在`input`中輸入文字
+* 按下`Generate`按鈕
+* 創建對*figlet* function端點(`/function/figlet`)的Ajax請求
+* 將結果展現於`textarea`
 
-There is no need to change the `handler.py` because it can dynamically serve HTML from the previous section. Despite not changing the `handler.py` , we need to build and push the function image because we need to pack the new `figlet.html` inside the function container.
+無需更改`handler.py`，因為它可以動態地經由query string來指定要回應的HTML。儘管沒有更改`handler.py`，但我們仍需要構建並推送function映像，因為我們需要將新的`figlet.html`包裝在function容器中。
 
-Now build, push and deploy the function:
+現在構建，推送和部署function:
 
 ```
 $ faas-cli up -f show-html.yml
 ```
 
-This section assumes you have already deployed the *figlet* function from [Lab 2](./lab2.md).  
+本節假定你已經在[Lab 2](./lab2.md)部署了*figlet* function。
 
 ![](docs/lab6/figlet-function.png)
 
-Open your browser and first access:
+打開瀏覽器並進行訪問:
 
 http://127.0.0.1:8080/function/show-html?action=figlet
 
-You should see the "Figlet" page and should see an input. Type any text you want to and click the "Generate" button. If the request succeeds, the `textarea` should contain the figlet you typed inside the `input`. This is a trivial example, but by using this technique you can even create powerful SPAs (Single Page Application) with functions, too.
+你應該看到"Figlet"頁面，並且應該看到一個輸入。你可輸入想要的任何文本，然後點擊`Generate`按鈕。如果請求成功，則`textarea`應包含你在`input`中鍵入的figlet。這是一個簡單的範例，但是通過使用這種技術，你甚至還可以創建具有功能的強大SPA（單頁應用程序）。
 
-Let put "hello" in the input field, and hit "Generate" button:
+讓我們在輸入欄中輸入“hello”，然後點擊`Generate`按鈕：
 
 ![](docs/lab6/figlet-spa.png)
 
-In this lab you learned how you can serve HTML from your function and set the `Content-Type` of the response. In addition, you have also learned how you can call other functions with HTML + JavaScript and create a dynamic page with functions, too.
+在本實驗中，你學習到如何從function提供HTML並設置響應內容的`Content-Type`。此外，你還學習瞭如何使用HTML + JavaScript調用其他function以及如何使用function創建動態頁面。
 
-Now move onto [Lab 7](lab7.md)
+下一步 >>  [Lab 7](lab7_zh-tw.md)
