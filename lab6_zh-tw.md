@@ -35,6 +35,8 @@ def handle(req):
     return html
 ```
 
+> Pro-tip: It is also possible to use another function as the `X-Callback-Url` - this would be great for notifying yourself over Slack or Email when an asynchronous workload has been processed. To call another function with the result set the `X-Callback-Url` to `http://gateway.openfaas:8080/function/<function_name>`.
+
 ![](docs/lab6/show-html-python.png)
 
 這個function會將HTML返回給調用方。我們要做的另一件事是設置響應的`Content-Type`。我們必需要確保此function將返回HTML內容，因此`Content-Type` 應該始終為`text/html`。我們可以利用`show-html.yml`文件的`environment`區塊來進行設置。
