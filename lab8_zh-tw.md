@@ -123,6 +123,6 @@ Finished the sleep
 
 OpenFaaS API Gateway上還設置了最大超時時間長度，它將覆蓋function超時的設定。預設的最大超時配置為"20s"，但可以通過配置更長或更短的值。
 
-要配置gateway的超時, 請在[values.yaml](https://github.com/openfaas/faas-netes/blob/master/chart/openfaas/values.yaml)檔案中使用`gateway.readTimeout`與`gateway.writeTimeout`來設定, 如果是便使用Helm參數的話, 請使用`--set gateway.readTimeout=value`與`--set gateway.writeTimeout=value`。
+要配置gateway的超時, 請在[values.yaml](https://github.com/openfaas/faas-netes/blob/master/chart/openfaas/values.yaml)檔案中使用`gateway.readTimeout`與`gateway.writeTimeout`來設定, 如果是使用Helm參數來進行配置的話, 請使用`--set gateway.readTimeout=value`與`--set gateway.writeTimeout=value`。
 
 下一步 >>  [Lab 9](lab9_zh-tw.md)
