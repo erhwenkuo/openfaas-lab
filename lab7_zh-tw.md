@@ -1,6 +1,6 @@
 # Lab 7 - Asynchronous functions
 
-[English version](lab6.md)
+[English version](lab7.md)
 
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
