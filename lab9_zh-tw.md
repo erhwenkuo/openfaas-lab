@@ -1,5 +1,7 @@
 # Lab 9 - Advanced feature - Auto-scaling
 
+[English version](lab9.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 ## Auto-scaling in action
@@ -44,13 +46,13 @@ $ kubectl port-forward deployment/prometheus 9090:9090 -n openfaas
 
 ![](docs/lab9/openfaas-metrics-prometheus.png)
 
- Go ahead an open a new tab in which you navigate to the alert section using `http://127.0.0.1:9090/alerts`. On this page, you can later see when the threshold for the `request per seconds` is exceeded.
+繼續打開一個新頁籤並連接到Prometheus告警的顯示頁面`http://127.0.0.1:9090/alerts`。你稍後可以在此頁面上查看超過`request per seconds`閾值的告警。
 
 ![](docs/lab9/openfaas-prometheus-alerts.png)
 
 ### Trigger scaling of a python3-flask function
 
-Let pulling the `python3-flask` function template from store:
+讓我們從store中拉取`python3-flask`模板:
 
 ```bash
 $ faas-cli template store pull python3-flask
@@ -58,7 +60,7 @@ $ faas-cli template store pull python3-flask
 
 ![](docs/lab9/python-flask-template.png)
 
-Create a new function "echo-fn":
+創建一個function "echo-fn":
 
 ```bash
 $ faas-cli new echo-fn --lang python3-flask --prefix="<your-docker-username-here>
@@ -66,7 +68,7 @@ $ faas-cli new echo-fn --lang python3-flask --prefix="<your-docker-username-here
 
 ![](docs/lab9/echo-fn-python3-flask.png)
 
-The default behavior of function is echoing the input to the output:
+這個function的預設邏輯是將輸入回覆到輸出:
 
 ```python
 def handle(req):
@@ -79,7 +81,7 @@ def handle(req):
 
 ```
 
-Use the CLI to build, push, deploy with **auto-scaling labelling**:
+使用CLI來構建，推送和部署(**auto-scaling labelling**):
 
 ```
 $ faas-cli up -f echo-fn.yml \
@@ -120,7 +122,7 @@ Deployed. 202 Accepted.
 URL: http://127.0.0.1:8080/function/echo-fn.openfaas-fn
 ```
 
-Let's inspect the pod using `kubectl`:
+讓我們使用`kubectl`檢查pod:
 
 ```
 kubectl describe pods/echo-fn -n openfaas-fn
@@ -128,11 +130,12 @@ kubectl describe pods/echo-fn -n openfaas-fn
 
 ![](docs/lab9/echo-fn-with-labelling.png)
 
-You can also check this with `faas-cli describe echo-fn`
+你也可以使用`faas-cli describe echo-fn`來檢查:
 
 ![](docs/lab9/faas-cli-describe.png)
 
-Use below script to invoke the `echo-fn` function over and over until you see the replica count go from 1 to 5 and so on. You can monitor this value in Prometheus by adding a graph for `gateway_service_count` or by viewing the API Gateway with the function selected.
+使用下述的腳本來調用`echo-fn`函數一萬次，觀察副本數從1到10之間自動被調整。你可以在Prometheus中監控此指標，方法是添加`gateway_service_count`圖表，或者通過查看API網關上該function的副本數。
+
 
  ```bash
 $ for i in {0..10000};
@@ -141,52 +144,54 @@ do
 done;
  ```
 
+![](docs/lab9/echo-fn-replicate-count.png)
+
 ### Monitor for alerts
 
-You should now be able to see an increase in invocations of the `echo-fn` function in the graph that was created earlier. 
+現在，你應該可以在之前創建的圖中看到對`echo-fn`函數的調用有所增加。
 
 ![](docs/lab9/prometheus-function-invoke-count.png)
 
-Move over to the tab where you have open the alerts page. After a time period, you should start seeing that the `APIHighInvocationRate` state (and colour) changes to `Pending` before then once again changing to `Firing`. 
+移至打開警報頁面的頁籤。在一段時間之後，你應該開始看到`APIHighInvocationRate`狀態（和顏色）變為`Pending`，然後再次變為`Firing`。
 
 ![](docs/lab9/prometheus-alert-firing.png)
 
-You are also able to see the auto-scaling using the `$ faas-cli list` or over the [ui](http://127.0.0.1:8080)
+你還可以使用`$ faas-cli list`或[ui](http://127.0.0.1:8080)查看自動縮放的功能在做動。
 
-The status at the beginning of massive function invokings:
+大規模function被調用開始時的狀態:
 
 ![](docs/lab9/function-replicas-before.png)
 
-The status after scaling event is fired via Prometheus alert:
+通過Prometheus警報觸發縮放事件後的狀態:
 
 ![](docs/lab9/function-replicas-change.png)
 
 ![](docs/lab9/function-replicas-change-ui.png)
 
-Now stop the bash script or wait for all the invokings completed. You will see the replica count return to 1 replica after a few seconds.
+現在，停止bash腳本或等待所有調用完成。幾秒鐘後，你將看到副本計數返回到1個副本
 
 ![](docs/lab9/function-replicas-after.png)
 
 ### Troubleshooting
 
-If you believe that your auto-scaling is not triggering, then check the following:
+如果你認為自動縮放未被觸發，請檢查以下內容:
 
-* The Alerts page in Prometheus - this should be red/pink and say "FIRING" - i.e. at http://127.0.0.1:9090/alerts
-* Check the logs of the core services i.e. the gateway, Prometheus / AlertManager
+* Prometheus的“警報”(http://127.0.0.1:9090/alerts)頁面-應該為紅色/粉紅色，然後展示"FIRING"的狀態
+* 查看Kubernetes服務日誌
 
 ### Load-testing (optional)
 
-It is important to note that there is a difference between applying a scientific method and tooling to a controlled environment and running a Denial Of Service attack on your own laptop. Your laptop is not suitable for load-testing because generally you are running OpenFaaS in a Linux VM on a Windows or Mac host which is also a single node. This is not representative of a production deployment.
+要注意的是在受控環境中應用科學方法和工具與在你自己的筆記本電腦上運行`Denial Of Service`攻擊是有區別的。你的筆記本電腦不適合進行負載測試，因為通常你是在Windows或Mac主機（也是單節點）上的Linux VM中運行OpenFaaS的。這不代表生產環境的部署。
 
-See the documentation on [constructing a proper performance test](https://docs.openfaas.com/architecture/performance/).
+請參閱以下文檔: [constructing a proper performance test](https://docs.openfaas.com/architecture/performance/)。
 
-If `curl` is not generating enough traffic for your test, or you'd like to get some statistics on how things are broken down then you can try the [**hey**](https://github.com/rakyll/hey) tool. `hey` can generate a structured load by requests per second or a given duration.
+如果`curl`不能為你的測試生成足夠的調用流量，或者你想獲取有關的統計信息，則可以嘗試[**hey**](https://github.com/rakyll/hey)工具。`hey`可以通過每秒的請求或給定的持續時間生成結構化網絡負載。
 
-Follow the [https://github.com/rakyll/hey](https://github.com/rakyll/hey) github instruction to install it:
+按照[https://github.com/rakyll/hey](https://github.com/rakyll/hey)　github上的指示來進行安裝:
 
 ![](docs/lab9/hey-installation.png)
 
-Here's an example of running on a 1.6GHz 2019 ThinkPad T15 with Ubuntu 20.04, in the setting we ask `hey` to call `echo-fn` 100000 times with 3 worker thread.
+這是一個運行於1.6GHz 2019 ThinkPad T15 Notebook (Ubuntu 20.04)上的範例，在該設置中，我們要求`hey`使用3個工作線程將`echo-fn`調用100000次。
 
 ```bash
 $ hey -n 100000 -c 3 -m POST -d=TEST http://127.0.0.1:8080/function/echo-fn
@@ -236,15 +241,15 @@ Status code distribution:
 
 ```
 
-To use `hey` you must have Golang installed on your local computer.
+要使用`hey`，你必須在本地計算機上安裝Golang。
 
-See also: [hey on GitHub](https://github.com/rakyll/hey)
+請參閱: [hey on GitHub](https://github.com/rakyll/hey)
 
 ### Try scale from zero
 
-If you scale down your function to 0 replicas, you can still invoke it. The invocation will trigger the gateway into scaling the function to a non-zero value.
+如果將function的複本數縮小成為`0`個副本，你仍然可以調用它。調用將觸動OpenFaaS網關來將function縮放到非零值。
 
-Try it out with the following commands:
+使用以下命令嘗試一下:
 
 ```
 $ kubectl scale deployment --replicas=0 echo-fn -n openfaas-fn
@@ -252,11 +257,11 @@ $ kubectl scale deployment --replicas=0 echo-fn -n openfaas-fn
 
 ![](docs/lab9/echo-fn-scale-down.png)
 
-Open the OpenFaaS UI and check that `echo-fn` has 0 replicas.
+打開OpenFaaS UI並檢查`echo-fn`具有0個副本。
 
 ![](docs/lab9/echo-fn-scale-zero.png)
 
-You can also use `kubectl` to verify:
+你也可以使用`kubectl`來驗證:
 
 ```bash
 $ kubectl get deployment echo-fn -n openfaas-fn
@@ -264,7 +269,7 @@ $ kubectl get deployment echo-fn -n openfaas-fn
 
 ![](docs/lab9/echo-fn-scale-zero-kubectl.png)
 
-Now invoke the function and check back that it scaled to 1 replicas.
+現在調用該function，並檢查它是否縮放為1個副本。
 
 ```bash
 $ kubectl scale deployment --replicas=0 echo-fn -n openfaas-fn
@@ -286,4 +291,4 @@ Function                      	Invocations    	Replicas
 echo-fn                       	1              	1 
 ```
 
-Now move onto [Lab 10](lab10.md).
+下一步 >>  [Lab 10](lab10_zh-tw.md)

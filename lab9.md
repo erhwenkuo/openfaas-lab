@@ -1,5 +1,7 @@
 # Lab 9 - Advanced feature - Auto-scaling
 
+[Chinses version](lab9_zh-tw.md)
+
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
 ## Auto-scaling in action
@@ -134,7 +136,7 @@ You can also check this with `faas-cli describe echo-fn`
 
 ![](docs/lab9/faas-cli-describe.png)
 
-Use below script to invoke the `echo-fn` function over and over until you see the replica count go from 1 to 5 and so on. You can monitor this value in Prometheus by adding a graph for `gateway_service_count` or by viewing the API Gateway with the function selected.
+Use below script to invoke the `echo-fn` function over and over until you see the replica count go from 1 to 10 and so on. You can monitor this value in Prometheus by adding a graph for `gateway_service_count` or by viewing the API Gateway with the function selected.
 
  ```bash
 $ for i in {0..10000};
@@ -142,6 +144,8 @@ do
     echo -n "Post $i" | faas-cli invoke echo-fn && echo;
 done;
  ```
+
+![](docs/lab9/echo-fn-replicate-count.png)
 
 ### Monitor for alerts
 
