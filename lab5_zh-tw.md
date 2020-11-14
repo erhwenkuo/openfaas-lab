@@ -476,6 +476,8 @@ def apply_label(polarity, issue_number, repo, positive_threshold):
 
 ![](docs/lab5/issue-bot-python-final.png)
 
+>　範例程式碼可以在以下位置獲得: [issue-bot/bot-handler/handler.py](https://github.com/openfaas/workshop/blob/master/issue-bot/bot-handler/handler.py)
+
 * 構建和部署
 
 使用CLI構建和部署function:

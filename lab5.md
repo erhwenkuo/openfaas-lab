@@ -479,7 +479,7 @@ def apply_label(polarity, issue_number, repo, positive_threshold):
 
 ![](docs/lab5/issue-bot-python-final.png)
 
-> The source code is also available at [issue-bot/bot-handler/handler.py](./issue-bot/bot-handler/handler.py)
+> The source code is also available at [issue-bot/bot-handler/handler.py](https://github.com/openfaas/workshop/blob/master/issue-bot/bot-handler/handler.py)
 
 * Build and deploy
 
