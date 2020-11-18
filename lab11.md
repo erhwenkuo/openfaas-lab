@@ -230,4 +230,4 @@ HMAC validation failed.
 
 As a follow-up task you could apply HMAC to secure your endpoint on `issue-bot` from [lab 5](lab5.md)
 
-You have completed the labs and can return to the [main page](lab-introduction.md).
+You have completed the labs and can return to the [main page](README.md).

@@ -229,4 +229,4 @@ HMAC validation failed.
 
 作為本次學習的延伸，你可以試著應用HMAC的手法來保護[lab 5](lab5.md)實作的`issue-bot`。
 
-至此你已完成OpenFaas基礎的labs，現在你可以返回到[main page](lab-introduction.md)。
+至此你已完成OpenFaas基礎的labs，現在你可以返回到[Ｗorkshop說明主頁](README_zh-tw.md)。

@@ -1,249 +1,141 @@
-# OpenFaaS, K3D Quickstart
+# openfaas-workshop
 
 [English version](README.md)
 
-這是一個自主學習的lab系列文章，主要學習如何使用OpenFaas來構建，部署和運行serverless的function。
+這是一個自主學習的workshop (修改自原始版本 [openfaas-workshop](https://github.com/openfaas/workshop)) 主要用於學習如何使用OpenFaaS來構建，部署和運行serverless functions。
 
-## OpenFaaS brief introduciton
+這個workshop將重點關注在kubernes上運行OpenFaaS，並提供更多不同語言（包括Python，Java和Golang）的function開發部署範例。
 
-![OpenFaas Logo](https://camo.githubusercontent.com/cf01eefb5b6905f3774376d6d1ed55b8f052d211/68747470733a2f2f626c6f672e616c6578656c6c69732e696f2f636f6e74656e742f696d616765732f323031372f30382f666161735f736964652e706e67
-)
+![](https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png)
 
-OpenFaaS使開發人員可以輕鬆地將事件驅動的function和微服務部署到Kubernetes，而無需重複的去寫許多樣板程式碼。
+在workshop中，你首先將OpenFaaS部署到本機電腦或使用Docker for Mac/Windows的遠程集群。然後，你將使用OpenFaaS UI，CLI和Function Store來啟動function的開發。
 
-我們可以將程式碼或現有的己編譯好的程式打包進Docker映像中，以獲得具有自動縮放和可大規模擴展的function端點(更好的是OpenFaas有內建監控這些function運行狀態的指標)。
+在使用Python構建，部署並且調用自己的Serverless Function之後，你將繼續學習以下主題：
 
-## How to start quickly?
+* 用pip管理依賴項
+* 通過secure secrets處理API令牌
+* 使用Prometheus來監控己部署的function
+* 異步調用function並將function鏈接在一起以創建應用程序
 
-這是一個如何使用[K3D](https://k3d.io/)來創建[K3S](https://k3s.io/)群集, 並啟動[OpenFaas](https://www.openfaas.com/)的快速簡單範例。
+整個workshop最後精彩點在通過讓你創建自己的GitHub機器人(該機器人可以自動響應Githhub project的issue)。通過IFTTT.com連接到線上事件流，代表你可以應用相同的手法來構建不同類型的Bot，自動響應程序以及與社交媒體和IoT設備進行系統集成。
 
-### Pre-reqs:
+最後，這個labs還涵蓋了一些更進階的主題，並提供了進一步學習的建議。
 
-1) Docker
-2) [K3d](https://github.com/rancher/k3d/releases)
-3) The Openfaas [CLI tool](https://github.com/openfaas/faas-cli#get-started-install-the-cli). 
-4) The [arkade](https://github.com/alexellis/arkade) CLI
-5) The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) CLI
+## Requirements:
 
-### 1. Install **K3D** cluster
+我們將逐步介紹如何在[Lab 1](./lab1_zh-tw.md)中安裝這些要求。請在參加講師指導的workshop之前完成[Lab 1](./lab1_zh-tw.md)。至少你應該安裝Docker並預先拉下[OpenFaaS映像檔](./lab1_zh-tw.md#Pre-pull-the-system-images)到本機上。
 
-使用以下命令創建k3d集群：
+* 函數將用Python編寫（未來將包含Java與Golang的版本），因此你應具備基本寫程式與一些腳本編寫的經驗和能力
+* 安裝推薦的代碼編輯器/ IDE [VSCode](https://code.visualstudio.com/download) / IDE [Pycharm](https://www.jetbrains.com/pycharm/)
+* 如果使用Windows作業系統，請安裝[Git Bash](https://git-scm.com/downloads)
+* 建議使用的操作系統：MacOS，Windows 10 Pro / Enterprise，Ubuntu Linux
 
-```bash
-$ k3d cluster create
-```
+Docker:
 
-你應該看到類似的console輸出。
+* Docker CE for [Mac](https://store.docker.com/editions/community/docker-ce-desktop-mac)/[Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows) 
+* Docker CE for Linux
 
-```bash
-INFO[0000] Created network 'k3d-k3s-default'            
-INFO[0000] Created volume 'k3d-k3s-default-images'      
-INFO[0001] Creating node 'k3d-k3s-default-server-0'     
-INFO[0007] Creating LoadBalancer 'k3d-k3s-default-serverlb' 
-INFO[0008] (Optional) Trying to get IP of the docker host and inject it into the cluster as 'host.k3d.internal' for easy access 
-INFO[0011] Successfully added host record to /etc/hosts in 2/2 nodes and to the CoreDNS ConfigMap 
-INFO[0011] Cluster 'k3s-default' created successfully!  
-INFO[0011] You can now use it like this:                
-kubectl cluster-info
-```
+> 注意：如果你有一台不兼容的PC，則萬不得已時，你可以在[play-with-docker](https://labs.play-with-docker.com/)上練習這個workshop。
 
-上面的命令將在本機上創建一個名為“k3s-default”的k3d集群。
+## [Quickstart](quickstart.md)
 
-### 2. Install **OpenFaas** using **arkade** cli
+* 安裝 **K3D** 集群
+* 安裝 **OpenFaas**
+* 連接使用OpenFaas Web UI
+* 設置 faas-cli
+* 通過CLI來調用己佈署的function
 
-使用[arkade](https://github.com/alexellis/arkade)是在kubernetes中安裝OpenFaas的一個簡單方法(也是現在官方建議的手法)。
+## [Lab 1 - Prepare for OpenFaaS](./lab1_zh-tw.md)
+* 安裝相關必需的軟體或系統
+* 設置單節點Kubernetes集群
+* 申請Docker Hub帳號
+* OpenFaaS CLI安裝與使用
+* 佈署OpenFaaS
 
-```bash
-$ arkade install openfaas
-```
+## [Lab 2 - Test things out](./lab2_zh-tw.md)
 
-arkade完成安裝OpenFaas後，將顯示以下信息。
+* 使用OpenFaas UI
+* 使用Function Store來佈署function
+* 學習如何使用faas-cli
+* 找到監控function的Prometheus指標
 
-```bash
-Using kubeconfig: /home/witlab/.kube/config
-Node architecture: "amd64"
-Client: "x86_64", "Linux"
-2020/10/30 07:15:52 User dir established as: /home/witlab/.arkade/
-"openfaas" has been added to your repositories
+## [Lab 3 - Introduction to Functions](./lab3_zh-tw.md)
 
-VALUES values.yaml
-Command: /home/witlab/.arkade/bin/helm [upgrade --install openfaas openfaas/openfaas --namespace openfaas --values /tmp/charts/openfaas/values.yaml --set gateway.directFunctions=true --set openfaasImagePullPolicy=IfNotPresent --set faasnetes.imagePullPolicy=Always --set gateway.replicas=1 --set ingressOperator.create=false --set queueWorker.maxInflight=1 --set basic_auth=true --set serviceType=NodePort --set clusterRole=false --set operator.create=false --set basicAuthPlugin.replicas=1 --set queueWorker.replicas=1]
-Release "openfaas" does not exist. Installing it now.
-NAME: openfaas
-LAST DEPLOYED: Fri Oct 30 07:15:56 2020
-NAMESPACE: openfaas
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-To verify that openfaas has started, run:
+* 經由function範本或手動地產生新function
+* 構建一個`astronaut-finder`的function
+ * 用`pip`添加依賴
+ * 故障排除：查找容器的日誌
+* 故障查找：使用`write_debug`輸出詳細信息
+* 使用自定義和第三方語言function開發模板
+* 經由OpenFaas的Template Store來發現社群模板
 
-  kubectl -n openfaas get deployments -l "release=openfaas, app=openfaas"
-=======================================================================
-= OpenFaaS has been installed.                                        =
-=======================================================================
+## [Lab 4 - Go deeper with functions](./lab4_zh-tw.md)
 
-# Get the faas-cli
-curl -SLsf https://cli.openfaas.com | sudo sh
+* [通過環境變量注入配置](lab4_zh-tw.md#inject-configuration-through-environmental-variables)
+  * 使用yaml檔來進行function部署
+  * 動態使用HTTP context - querystring / headers 等等
+* 安全增強: 唯讀的檔案系統
+* [利用日誌記錄](lab4_zh-tw.md#making-use-of-logging)
+* [創建工作流](lab4_zh-tw.md#create-workflows)
+  * 在客戶端進行function的串連
+  * 從另一個調用一個函數
 
-# Forward the gateway to your machine
-kubectl rollout status -n openfaas deploy/gateway
-kubectl port-forward -n openfaas svc/gateway 8080:8080 &
+## [Lab 5 - Create a GitHub bot](./lab5_zh-tw.md)
 
-# If basic auth is enabled, you can now log into your gateway:
-PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
-echo -n $PASSWORD | faas-cli login --username admin --password-stdin
+> 構建 `issue-bot` - GitHub問題的自動回複機器人
+* 取得GitHub帳號
+* 用ngrok建立網路通道(tunneling)
+* 創建一個Webhook接收器 `issue-bot`
+* 從GitHub接收Webhooks訊號
+* 部署情緒分析function
+* 通過GitHub API來給予情緒分類標籤
+* 完成這個function
 
-faas-cli store deploy figlet
-faas-cli list
+## [Lab 6 - HTML for your functions](./lab6_zh-tw.md)
 
-# For Raspberry Pi
-faas-cli store list \
- --platform armhf
+* 從function生成並返回基本HTML網頁
+* 從磁盤讀取並返回靜態HTML文件
+* 與其他function協作
 
-faas-cli store deploy figlet \
- --platform armhf
+## [Lab 7 - Asynchronous Functions](./lab7_zh-tw.md)
 
-# Find out more at:
-# https://github.com/openfaas/faas
+* 同步與異步調用function
+* 查看queue-worker的日誌
+* 將`X-Callback-Url`與requestbin和ngrok一起使用
 
-Thanks for using arkade!
+## [Lab 8 - Advanced Feature - Timeouts](./lab8_zh-tw.md)
 
-```
+* 使用`read_timeout`來調整超時設定
+* 調適長時間運行的function
 
-### Connect to OpenFaas via UI
+## [Lab 9 - Advanced Feature - Auto-scaling](./lab9_zh-tw.md)
 
-你可以通過CLI或UI來訪問OpenFaaS網關的REST API。
+* 了解auto-scaling的運作
+ * 關於最小和最大副本的一些內部設計
+ * 探查本地的Prometheus
+ * 執行Prometheus query
+ * 通過curl來觸發function
+ * 觀察auto-scaling如何啟動
 
-![](https://raw.githubusercontent.com/openfaas/faas/master/docs/of-workflow.png)
+## [Lab 10 - Advanced Feature - Secrets](./lab10_zh-tw.md)
 
-#### 1.Proxy OpenFaaS Gateway service
+* 調整`issue-bot`以使用secret來進行保護
+ * 產生secret
+ * function如何查找預設定的secret
 
-將網關的網路端口映對到本機的特定網路端口。
+## [Lab 11 - Advanced feature - Trust with HMAC](./lab11_zh-tw.md)
 
-```bash
-# Forward the gateway to your machine
-$ kubectl port-forward -n openfaas svc/gateway 8080:8080 &
-```
+* 使用HMAC將安全應用於function
 
-#### 2.Retrieve OpenFaas userid & password credential
 
-在`arcade` CLI安裝OpenFaaS時，它將在創建用戶`admin`時隨機生成一個密碼。讓我們將密碼導出到環境變量。
+你可以從第一個[Lab 1](lab1_zh-tw.md)開始ＯpenFaas的學習之旅。
 
-```bash
-# If basic auth is enabled, you can now log into your gateway:
-$ PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+## Tear down / Clear up
 
-# Print out the password from environment
-$ echo $PASSWORD
-{YOUR_PASSWORD}
-```
+你可以在[這裡](https://docs.openfaas.com/deployment/troubleshooting/#uninstall-openfaas)找到如何停止和刪除OpenFaaS相關資訊與手法。
 
-#### 3.Login OpenFaas UI
+## Acknowledgements
 
-打開Web瀏覽器，訪問"http://localhost:8080"，然後輸入帳密：
-* User Name: `admin`
-* Password: `{YOUR_PASSWORD}`
+這些實驗室的內容源自[openfaas/workshop](https://github.com/openfaas/workshop)，並由許多貢獻者貢獻。
 
-![OpenFaaS UI](docs/openfaas_ui_01.png)
-
-你可以在OpenFaaS用戶界面裡來嘗試各種範例function。例如我們來部建一個function `figlet`：
-
-1) Click the "Deploy New Function" button
-2) Search for "Figlet" and click it.
-3) Click "Deploy"
-
-![Deploy Figlet](docs/deploy_figlet.png)
-
-該function應該會出現在左側菜單上，點擊它，然後等待狀態更改為“Ready”。然後在“Request Body”字段中輸入"hello"，然後點擊“Invoke”。
-
-![Invoke Figlet](docs/invoke_figlet.png)
-
-你應該能夠在"Response body"中看到執行後的結果:
-
-```bash
- _          _ _       
-| |__   ___| | | ___  
-| '_ \ / _ \ | |/ _ \ 
-| | | |  __/ | | (_) |
-|_| |_|\___|_|_|\___/ 
-                      
-
-```
-
-### Connect to OpenFaas via CLI
-
-按照以下做法安裝`faas-cli`。如果你使用的是MacOS，並且已經安裝了`homebrew`，則安裝過程非常簡單:
-
-```bash
-brew install faas-cli
-```
-
-對於手動安裝，可以使用以下命令:
-
-```bash
-curl -sSL https://cli.openfaas.com | sudo sh
-```
-
-#### Configure faas-cli
-
-設定faas-cli來連接本機的OpenFaaS集群,需要兩個環境變量:
-* OPENFAAS_UR
-* PASSWORD
-
-```bash
-$ export OPENFAAS_URL=http://localhost:8080
-$ echo $PASSWORD | faas-cli login --password-stdin
-```
-
-#### List deployed function
-
-列出OpenFaas中當前己部署的function:
-
-```bash
-$ faas-cli list
-
-Function                      	Invocations    	Replicas
-figlet                        	0              	1  
-```
-
-#### Invoke deployed function via CLI
-
-使用`faas-cli`來觸發某一個己部署的function:
-
-```bash
-$ echo "hello" | faas-cli invoke figlet
-
- _          _ _       
-| |__   ___| | | ___  
-| '_ \ / _ \ | |/ _ \ 
-| | | |  __/ | | (_) |
-|_| |_|\___|_|_|\___/ 
-```
-
-### Destroy & clean up
-
-要清理整個lab的環境可執行下列命令:
-
-```bash
-$ k3d cluster delete
-```
-
-就這樣, 你可開始使用OpenFaaS來體驗所謂Serverless或Fn-as-service是怎樣的概念。
-
-### Hey, I am interested
-
-要了解更多有關如何使用OpenFaas來設計/部署serverless functions的信息，可以繼續閱讀[labs introduction](lab-introduction_zh-tw.md)和精心設計的labs：
-
-* [Lab 1 - Prepare for OpenFaaS](./lab1_zh-tw.md)
-* [Lab 2 - Test things out](./lab2_zh-tw.md)
-* [Lab 3 - Introduction to Functions](./lab3_zh-tw.md)
-* [Lab 4 - Go deeper with functions](./lab4_zh-tw.md)
-* [Lab 5 - Create a GitHub bot](./lab5_zh-tw.md)
-* [Lab 6 - HTML for your functions](./lab6_zh-tw.md)
-* [Lab 7 - Asynchronous Functions](./lab7_zh-tw.md)
-* [Lab 8 - Advanced Feature - Timeouts](./lab8_zh-tw.md)
-* [Lab 9 - Advanced Feature - Auto-scaling](./lab9_zh-tw.md)
-* [Lab 10 - Advanced Feature - Secrets](./lab10_zh-tw.md)
-* [Lab 11 - Advanced feature - Trust with HMAC](./lab11_zh-tw.md) 
-
+感謝 @alexellis, @iyovcheva, @BurtonR, @johnmccabe, @laurentgrangeau, @stefanprodan, @kenfdev, @templum & @rgee0 提供了這些labs。

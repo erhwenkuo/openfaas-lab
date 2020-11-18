@@ -1,245 +1,143 @@
-# OpenFaaS, K3D Quickstart
+# openfaas-workshop
 
-[Chinese version](README_zh-tw.md)
+[Chinses version](README_zh-tw.md)
 
-This ia a self-paced lab for learning how to build, deploy and run serverless functions with OpenFaas.
+This is a self-paced workshop (modifed version of orgin [openfaas-workshop](https://github.com/openfaas/workshop)) for learning how to build, deploy and run serverless functions with OpenFaaS.
 
-## OpenFaaS brief introduciton
+The workshop will focus on running OpenFaaS on kubernes and also providing more examples of different languages (including Python, Java & Golang).
 
-![](https://camo.githubusercontent.com/cf01eefb5b6905f3774376d6d1ed55b8f052d211/68747470733a2f2f626c6f672e616c6578656c6c69732e696f2f636f6e74656e742f696d616765732f323031372f30382f666161735f736964652e706e67
-)
+![](https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png)
 
-OpenFaaS makes it easy for developers to deploy event-driven functions and microservices to Kubernetes without repetitive, boiler-plate coding. 
+In this workshop you begin by deploying OpenFaaS to your laptop or a remote cluster with Docker for Mac or Windows. You will then kick the tires with the OpenFaaS UI, CLI and Function Store. 
 
-We can package our code or an existing binary in a Docker image to get a highly scalable endpoint with auto-scaling and metrics.
+After building, deploying an invoking your own Serverless Functions in Python you'll go on to cover topics such as: 
 
-## How to start quickly?
+* managing dependencies with pip
+* dealing with API tokens through secure secrets
+* monitoring functions with Prometheus
+* invoking functions asynchronously and chaining functions together to create applications
 
-This is a quick and dirty example of how to start [OpenFaas](https://www.openfaas.com/) on [K3S](https://k3s.io/) cluster using [K3D](https://k3d.io/).
+The labs culminate by having you create your very own GitHub bot which can respond to issues automatically. The same method could be applied by connecting to online event-streams through IFTTT.com - this will enable you to build bots, auto-responders and integrations with social media and IoT devices.
 
+Finally the labs cover more advanced topics and give suggestions for further learning.
 
-### Pre-reqs:
+## Requirements:
 
-1) Docker
-2) [K3d](https://github.com/rancher/k3d/releases)
-3) The Openfaas [CLI tool](https://github.com/openfaas/faas-cli#get-started-install-the-cli). 
-4) The [arkade](https://github.com/alexellis/arkade) CLI
-5) The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) CLI
+We walk through how to install these requirements in [Lab 1](./lab1.md). Please do [Lab 1](./lab1.md) before you attend an instructor-led workshop.  At the very least you should [install Docker](./lab1.md#docker) and [pre-pull the OpenFaaS images](./lab1.md#Pre-pull-the-system-images).
 
-### 1. Install **K3D** cluster
+* Functions will be written in Python(later on Java, Golang might be included), so prior programming or scripting experience is preferred 
+* Install the recommended code-editor / IDE [VSCode](https://code.visualstudio.com/download) / IDE [Pycharm](https://www.jetbrains.com/pycharm/)
+* For Windows install [Git Bash](https://git-scm.com/downloads)
+* Preferred OS: MacOS, Windows 10 Pro/Enterprise, Ubuntu Linux
 
-Use below command to create a k3d cluster:
+Docker:
 
-```bash
-$ k3d cluster create
-```
+* Docker CE for [Mac](https://store.docker.com/editions/community/docker-ce-desktop-mac)/[Windows](https://store.docker.com/editions/community/docker-ce-desktop-windows) **Edge edition**
+* Docker CE for Linux
 
-You should see similar console output.
+> Note: As a last resort if you have an incompatible PC you can run the workshop on https://labs.play-with-docker.com/.
 
-```bash
-INFO[0000] Created network 'k3d-k3s-default'            
-INFO[0000] Created volume 'k3d-k3s-default-images'      
-INFO[0001] Creating node 'k3d-k3s-default-server-0'     
-INFO[0007] Creating LoadBalancer 'k3d-k3s-default-serverlb' 
-INFO[0008] (Optional) Trying to get IP of the docker host and inject it into the cluster as 'host.k3d.internal' for easy access 
-INFO[0011] Successfully added host record to /etc/hosts in 2/2 nodes and to the CoreDNS ConfigMap 
-INFO[0011] Cluster 'k3s-default' created successfully!  
-INFO[0011] You can now use it like this:                
-kubectl cluster-info
-```
+## [Quickstart](quickstart.md)
 
-Above command will create a k3d cluster named "k3s-default".
+* Install **K3D** cluster
+* Install **OpenFaas**
+* Connect to OpenFaas via UI
+* Configure faas-cli
+* Invoke deployed function via CLI
 
-### 2. Install **OpenFaas** using **arkade** cli
+## [Lab 1 - Prepare for OpenFaaS](./lab1.md)
 
-Using [arkade](https://github.com/alexellis/arkade) is the most easy way to to install OpenFaas in kubernetes.
+* Install pre-requisites
+* Set up a single-node cluster with Kubernetes
+* Docker Hub account
+* OpenFaaS CLI
+* Deploy OpenFaaS
 
-```bash
-$ arkade install openfaas
-```
+## [Lab 2 - Test things out](./lab2.md)
 
-Below information will show once arkade finish install OpenFaas.
+* Use the UI Portal
+* Deploy via the Function Store
+* Learn about the CLI
+* Find metrics with Prometheus
 
-```bash
-Using kubeconfig: /home/witlab/.kube/config
-Node architecture: "amd64"
-Client: "x86_64", "Linux"
-2020/10/30 07:15:52 User dir established as: /home/witlab/.arkade/
-"openfaas" has been added to your repositories
+## [Lab 3 - Introduction to Functions](./lab3.md)
 
-VALUES values.yaml
-Command: /home/witlab/.arkade/bin/helm [upgrade --install openfaas openfaas/openfaas --namespace openfaas --values /tmp/charts/openfaas/values.yaml --set gateway.directFunctions=true --set openfaasImagePullPolicy=IfNotPresent --set faasnetes.imagePullPolicy=Always --set gateway.replicas=1 --set ingressOperator.create=false --set queueWorker.maxInflight=1 --set basic_auth=true --set serviceType=NodePort --set clusterRole=false --set operator.create=false --set basicAuthPlugin.replicas=1 --set queueWorker.replicas=1]
-Release "openfaas" does not exist. Installing it now.
-NAME: openfaas
-LAST DEPLOYED: Fri Oct 30 07:15:56 2020
-NAMESPACE: openfaas
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-To verify that openfaas has started, run:
+* Scaffold or generate a new function
+* Build the astronaut-finder function
+ * Add dependencies with `pip`
+ * Troubleshooting: find the container's logs
+* Troubleshooting: verbose output with `write_debug`
+* Use custom and third-party language templates
+* Discover community templates using the Template Store
 
-  kubectl -n openfaas get deployments -l "release=openfaas, app=openfaas"
-=======================================================================
-= OpenFaaS has been installed.                                        =
-=======================================================================
+## [Lab 4 - Go deeper with functions](./lab4.md)
 
-# Get the faas-cli
-curl -SLsf https://cli.openfaas.com | sudo sh
+* [Inject configuration through environmental variables](lab4.md#inject-configuration-through-environmental-variables)
+  * At deployment using yaml
+  * Dynamically using HTTP context - querystring / headers etc
+* Security: read-only filesystems
+* [Making use of logging](lab4.md#making-use-of-logging)
+* [Create Workflows](lab4.md#create-workflows)
+  * Chaining functions on the client-side
+  * Call one function from another
 
-# Forward the gateway to your machine
-kubectl rollout status -n openfaas deploy/gateway
-kubectl port-forward -n openfaas svc/gateway 8080:8080 &
+## [Lab 5 - Create a GitHub bot](./lab5.md)
 
-# If basic auth is enabled, you can now log into your gateway:
-PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
-echo -n $PASSWORD | faas-cli login --username admin --password-stdin
+> Build `issue-bot` - an auto-responder for GitHub Issues
 
-faas-cli store deploy figlet
-faas-cli list
+* Get a GitHub account
+* Set up a tunnel with ngrok
+* Create an webhook receiver `issue-bot`
+* Receive webhooks from GitHub
+* Deploy SentimentAnalysis function
+* Apply labels via the GitHub API
+* Complete the function
 
-# For Raspberry Pi
-faas-cli store list \
- --platform armhf
+## [Lab 6 - HTML for your functions](./lab6.md)
 
-faas-cli store deploy figlet \
- --platform armhf
+* Generate and return basic HTML from a function
+* Read and return a static HTML file from disk
+* Collaborate with other functions
 
-# Find out more at:
-# https://github.com/openfaas/faas
+## [Lab 7 - Asynchronous Functions](./lab7.md)
 
-Thanks for using arkade!
+* Call a function synchronously vs asynchronously
+* View the queue-worker's logs
+* Use an `X-Callback-Url` with requestbin and ngrok
 
-```
+## [Lab 8 - Advanced Feature - Timeouts](./lab8.md)
 
-### Connect to OpenFaas via UI
+* Adjust timeouts with `read_timeout`
+* Accommodate longer running functions
 
-The OpenFaaS Gateway can be accessed through its REST API via CLI or UI.
+## [Lab 9 - Advanced Feature - Auto-scaling](./lab9.md)
 
-![](https://raw.githubusercontent.com/openfaas/faas/master/docs/of-workflow.png)
+* See auto-scaling in action
+  * Some insights on min and max replicas
+  * Discover and visit local Prometheus
+  * Execute and Prometheus query
+  * Invoke a function using curl
+  * Observe auto-scaling kicking in
 
-#### 1.Proxy OpenFaaS Gateway service
 
-```bash
-# Forward the gateway to your machine
-$ kubectl port-forward -n openfaas svc/gateway 8080:8080 &
-```
+## [Lab 10 - Advanced Feature - Secrets](./lab10.md)
 
-#### 2.Retrieve OpenFaas userid & password credential
+* Adapt issue-bot to use a secret
+  * Create a secret
+  * Access the secret within the function
 
-While arcade CLI install OpenFaaS, it will create a user "admin" with random generated password. Let's export the password as environment variable.
+## [Lab 11 - Advanced feature - Trust with HMAC](./lab11.md)
 
-```bash
-# If basic auth is enabled, you can now log into your gateway:
-$ PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+* Apply trust to functions using `HMAC`
 
-# Print out the password from environment
-$ echo $PASSWORD
-{YOUR_PASSWORD}
-```
+You can start with the first lab [Lab 1](lab1.md).
 
-#### 3.Login OpenFaas UI
+## Tear down / Clear up
 
-Open a web browser to `localhost:8080`, and enter the credential:
-* User Name: `admin`
-* Password: `{YOUR_PASSWORD}`
+You can find how to stop and remove OpenFaaS [here](https://docs.openfaas.com/deployment/troubleshooting/#uninstall-openfaas)
 
-![OpenFaaS UI](docs/openfaas_ui_01.png)
+## Acknowledgements
 
-You can try various functions from the OpenFaaS `store` within the UI. For exmaple:
-1) Click the "Deploy New Function" button
-2) Search for "Figlet" and click it.
-3) Click "Deploy"
+The content of these labs origined from [openfaas/workshop](https://github.com/openfaas/workshop) and contributed by many contributers.
 
-![Deploy Figlet](docs/deploy_figlet.png)
-
-The function should appear on the menu on the left, click it, and wait for the status to change to “Ready”. Then enter "hello" in the “Request Body” field and click Invoke. 
-
-![Invoke Figlet](docs/invoke_figlet.png)
-
-You should able to see the result in "Response body":
-
-```bash
- _          _ _       
-| |__   ___| | | ___  
-| '_ \ / _ \ | |/ _ \ 
-| | | |  __/ | | (_) |
-|_| |_|\___|_|_|\___/ 
-                      
-
-```
-
-### Connect to OpenFaas via CLI
-
-Make sure you install `faas-cli` below below practice. If you're on MacOS and already have `homebrew` installed then installation is as simple as:
-
-```bash
-brew install faas-cli
-```
-
-For manual installation, you can use the following command:
-
-```bash
-curl -sSL https://cli.openfaas.com | sudo sh
-```
-
-#### Configure faas-cli
-
-Configure the faas-cli to use your local OpenFaaS cluster by using the faas-cli login command. There are two environment variables needed for faas-cli:
-* OPENFAAS_UR
-* PASSWORD
-
-```bash
-$ export OPENFAAS_URL=http://localhost:8080
-$ echo $PASSWORD | faas-cli login --password-stdin
-```
-
-#### List deployed function
-
-To list current deployed functions in OpenFaas:
-
-```bash
-$ faas-cli list
-
-Function                      	Invocations    	Replicas
-figlet                        	0              	1  
-```
-
-#### Invoke deployed function via CLI
-
-```bash
-$ echo "hello" | faas-cli invoke figlet
-
- _          _ _       
-| |__   ___| | | ___  
-| '_ \ / _ \ | |/ _ \ 
-| | | |  __/ | | (_) |
-|_| |_|\___|_|_|\___/ 
-```
-
-### Destroy & clean up
-
-To clean up, execute below commands:
-
-```bash
-$ k3d cluster delete
-```
-
-That's it! You have a runing OpenFaaS to experiement.
-
-### Hey, I am interested
-
-To learn more how to use OpenFaas for designing/deploying serverless functions, you can continue with [labs introduction](lab-introduction.md) and each well-craft labs:
-
-* [Lab 1 - Prepare for OpenFaaS](./lab1.md)
-* [Lab 2 - Test things out](./lab2.md)
-* [Lab 3 - Introduction to Functions](./lab3.md)
-* [Lab 4 - Go deeper with functions](./lab4.md)
-* [Lab 5 - Create a GitHub bot](./lab5.md)
-* [Lab 6 - HTML for your functions](./lab6.md)
-* [Lab 7 - Asynchronous Functions](./lab7.md)
-* [Lab 8 - Advanced Feature - Timeouts](./lab8.md)
-* [Lab 9 - Advanced Feature - Auto-scaling](./lab9.md)
-* [Lab 10 - Advanced Feature - Secrets](./lab10.md)
-* [Lab 11 - Advanced feature - Trust with HMAC](./lab11.md) 
-
+Thanks to @alexellis, @iyovcheva, @BurtonR, @johnmccabe, @laurentgrangeau, @stefanprodan, @kenfdev, @templum & @rgee0 for these labs.
