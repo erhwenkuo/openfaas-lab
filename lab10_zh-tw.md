@@ -114,4 +114,4 @@ $ faas-cli up -f issue-bot.yml
 
 接下來你可參考[Lab 5](./lab5_zh-tw.md)的資訊來進行測試。
 
-Now move onto [Lab 11](lab11_zh-tw.md).
+下一步 >>  [Lab 11](lab11_zh-tw.md)
