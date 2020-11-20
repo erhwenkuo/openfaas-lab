@@ -4,6 +4,8 @@
 
 <img src="https://github.com/openfaas/media/raw/master/OpenFaaS_Magnet_3_1_png.png" width="500px"></img>
 
+<img src="docs/golang-icon.png" width="100px"></img>
+
 在開始這個lab之前，請為lab3在本機上創建一個新文件夾:
 
 ```sh
@@ -74,150 +76,137 @@ template
 
 查看`template`每個語言子文件夾，通過每個語言的模板可快速了解`faas-cli`如何幫忙快速產生一個新function的程式碼結構。
 
-讓我們更深入地了解`template\python3`文件夾:
+讓我們更深入地了解`template\go`文件夾:
 
 ```sh
-python3
+go
 ├── Dockerfile
 ├── function
-│   ├── handler.py
-│   ├── __init__.py
-│   └── requirements.txt
-├── index.py
-├── requirements.txt
+│   └── handler.go
+├── go.mod
+├── main.go
 └── template.yml
 ```
-* index.py - 以stdin作為輸入並分派給handler.py處理，然後將結果打印到stdout
+
+* main.go - 以stdin作為輸入並分派給handler.go處理，然後將結果打印到stdout
 * Dockerfile - 該function打包成Docker映像的定義
 
 至此你可以為Python, Python 3, Ruby, Go, Node, CSharp等創建一個新function。
 
-> 關於我們的範例的說明:
->
-> OpenFaaS社群已使用*Python 3*對本次workshop的所有範例進行了全面測試，但也應與*Python 2.7*兼容。
->
-> 如果你希望使用Python 2.7而不是Python 3，則替換`faas-cli new --lang python3`成`faas-cli new --lang python`。
+### Hello world in Go (classic template)
 
-### Hello world in Python
-
-我們將使用Python創建一個hello-world的function，然後在這個基礎下延伸去使用其他依賴項。
+我們將使用Go(classic template)模版來創建一個hello-world函數，然後移至新版本更高效的Go模板(http template)。
 
 * Scaffold the function
 
 ```sh
-$ faas-cli new --lang python3 hello-openfaas --prefix="<your-docker-username-here>"
+$ faas-cli new --lang go hello-classic-go --prefix="<your-docker-username-here>"
 ```
-![](docs/lab3/hello-openfaas-python.png)
+![](docs/lab3/hello-openfaas-classic-go.png)
 
-`--prefix`引數將修改hello-openfaas.yml中的`image:`的設定值，這個前綴應該是你的Docker Hub帳戶。對於[OpenFaaS](https://hub.docker.com/r/functions)，這是決定Docker映像名稱`image: functions/hello-openfaas`，這個引數的設定方法為`--prefix="functions"`。
+`--prefix`引數將修改hello-openfaas.yml中的`image:`的設定值，這個前綴應該是你的Docker Hub帳戶。對於[OpenFaaS](https://hub.docker.com/r/functions)，這是決定Docker映像名稱`image: functions/hello-classic-go`，這個引數的設定方法為`--prefix="functions"`。
 
 如果在創建function時未指定prefix，請在使用faas-cli創建新的function後編輯YAML文件來進行修正。
 
-上述命令將創建三個文件和一個目錄:
+上述命令將創建兩個文件和一個目錄:
 
 ```sh
-./hello-openfaas.yml
-./hello-openfaas
-./hello-openfaas/handler.py
-./hello-openfaas/requirements.txt
+hello-classic-go
+└── handler.go
+
+hello-classic-go.yml
 ```
 
 YAML(.yml)文件用於配置CLI，構建，推送和部署你開發的function。
 
 > 注意：每當你需要在Kubernetes或遠端OpenFaaS實例上部署function時，都必須在構建function映像後推送到Docker映像倉庫，最後趨動OpenFaaS來部署function。在這種情況下，你可以使用環境變量來覆蓋預設的OpenFaaS網關URL`127.0.0.1:8080`: 比如 `export OPENFAAS_URL=xxx.xxx.xxx.xxx:8080`。
 
-下面是YAML文件(`hello-openfaas.yml`)的內容：
+下面是YAML文件(`hello-classic-go.yml`)的內容:
 
 ```yaml
+version: 1.0
 provider:
   name: openfaas
   gateway: http://127.0.0.1:8080
-
 functions:
-  hello-openfaas:
-    lang: python3
-    handler: ./hello-openfaas
-    image: <your-docker-username>/hello-openfaas
+  hello-classic-go:
+    lang: go
+    handler: ./hello-classic-go
+    image: <your-docker-username>/hello-classic-go:latest
 ```
 
-* function的名稱由`functions:`下的鍵值表示，例如: `hello-openfaas`
+* function的名稱由`functions:`下的鍵值表示，例如: `hello-classic-go`
 * 程式語言由`lang`欄位來定義
 * 用於定義新function的文件夾稱為`handler`，該文件夾必須是文件夾而不是文件
 * 新function被打包的Docker映像名稱由`image`欄位來定義
 
 請記住，你可以在YAML文件中覆蓋`gateway` URL（通過編輯`provider:`下的`gateway:`值）或在CLI上（通過使用`--gateway`或設置`OPENFAAS_URL`環境變數） 。
 
-這是`handler.py`文件的內容:
+這是`handler.go`文件的內容:
 
-```python
-def handle(req):
-    """handle a request to the function
-    Args:
-        req (str): request body
-    """
+```golang
+package function
 
-    return req
+import (
+	"fmt"
+)
+
+// Handle a serverless request
+func Handle(req []byte) string {
+	return fmt.Sprintf("Hello, Go. You said: %s", string(req))
+}
+
 ```
 
-這個function只會輸入原封不動地返回輸入，因此實際上它是一個`echo`函數。
-
-編輯`handler.py`，使其返回`Hello OpenFaaS`:
-
-```sh
-    return "Hello OpenFaaS"
-```
-
-![](docs/lab3/hello-openfaas-modify-python.png)
-
-返回到stdout的任何值將隨後返回到調用程序。替代地，你也可以使用`print()`，該語句將表現出與調用程序類似的流程。
+這個function會使用字串模版`Hello, Go. You said: %s`來把輸入的資料內嵌成一句歡迎語句。
 
 這是function的本機開發的工作流程(build, push & deploy):
 
 ```sh
-$ faas-cli up -f hello-openfaas.yml
+$ faas-cli up -f hello-classic-go.yml
 
-[0] > Building hello-openfaas.
-Clearing temporary build folder: ./build/hello-openfaas/
-Preparing: ./hello-openfaas/ build/hello-openfaas/function
-Building: witlab/hello-openfaas:latest with python3 template. Please wait..
-Sending build context to Docker daemon  18.43kB
-Step 1/29 : FROM openfaas/classic-watchdog:0.18.18 as watchdog
+[0] > Building hello-classic-go.
+Clearing temporary build folder: ./build/hello-classic-go/
+Preparing: ./hello-classic-go/ build/hello-classic-go/function
+Building: witlab/hello-classic-go:latest with go template. Please wait..
+Sending build context to Docker daemon  8.704kB
+Step 1/35 : FROM --platform=${TARGETPLATFORM:-linux/amd64} openfaas/classic-watchdog:0.18.18 as watchdog
  ---> 8aa8fb60b8b9
-Step 2/29 : FROM python:3-alpine
- ---> 55d14c2b2fc1
+Step 2/35 : FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.13-alpine3.12 as builder
+ ---> 5863598a981a
 ...
 ...
-Step 29/29 : CMD ["fwatchdog"]
+Step 35/35 : CMD ["./fwatchdog"]
  ---> Using cache
- ---> c87d8334beeb
-Successfully built c87d8334beeb
-Successfully tagged witlab/hello-openfaas:latest
-Image: witlab/hello-openfaas:latest built.
-[0] < Building hello-openfaas done in 0.19s.
+ ---> 2506ebf6ef4c
+Successfully built 2506ebf6ef4c
+Successfully tagged witlab/hello-classic-go:latest
+Image: witlab/hello-classic-go:latest built.
+[0] < Building hello-classic-go done in 11.17s.
 [0] Worker done.
 
-Total build time: 0.19s
+Total build time: 11.17s
 
-[0] > Pushing hello-openfaas [witlab/hello-openfaas:latest].
-The push refers to repository [docker.io/witlab/hello-openfaas]
+[0] > Pushing hello-classic-go [witlab/hello-classic-go:latest].
+The push refers to repository [docker.io/witlab/hello-classic-go]
 ...
 ...
-latest: digest: sha256:ef9624d8a7e00ae714a678594bd42cc4807a571e9492527aa0019e32f6c25fb1 size: 4282
-[0] < Pushing hello-openfaas [witlab/hello-openfaas:latest] done.
+latest: digest: sha256:dc9e15dbd905c398879aba7efac4a4fe59bb98bbe7a6060936687e0d74a5b206 size: 1577
+[0] < Pushing hello-classic-go [witlab/hello-classic-go:latest] done.
 [0] Worker done.
 
-Deploying: hello-openfaas.
+Deploying: hello-classic-go.
 WARNING! Communication is not secure, please consider using HTTPS. Letsencrypt.org offers free SSL/TLS certificates.
 
 Deployed. 202 Accepted.
-URL: http://127.0.0.1:8080/function/hello-openfaas.openfaas-fn
+URL: http://127.0.0.1:8080/function/hello-classic-go.openfaas-fn
 ```
 
-驗證是否已構建docker 映像並將其推送到docker hub:
+驗證是否已構建docker映像並將其推送到docker hub:
 
 ![](docs/lab3/hello-openfaas-dockerhub.png)
 
-驗證`hello-openfaas` function是否已部署到OpenFaaS:
+驗證`hello-classic-go` function是否已部署到OpenFaaS:
 
 ![](docs/lab3/hello-openfaas-ui.png)
 
@@ -232,8 +221,9 @@ URL: http://127.0.0.1:8080/function/hello-openfaas.openfaas-fn
 ```sh
 $OPENFAAS_URL/function/<function_name>
 $OPENFAAS_URL/function/figlet
-$OPENFAAS_URL/function/hello-openfaas
+$OPENFAAS_URL/function/hello-classic-go
 ```
+
 > 提示：如果將YAML文件重命名為`stack.yml`，則無需將`-f`引數傳遞給`faas-cli`。
 
 你只能通過`GET`或`POST`方法調用function。
@@ -243,48 +233,152 @@ $OPENFAAS_URL/function/hello-openfaas
 用`faas-cli invoke`測試該function，檢查`faas-cli invoke --help`以獲得更多選項。
 
 ```sh
-$ echo "" | faas-cli invoke hello-openfaas
+$ echo "try me!" | faas-cli invoke hello-classic-go
 
-Hello OpenFaaS
+Hello, Go. You said: try me!
 ```
+
+![](docs/lab3/hello-classic-go-invoke.png)
+
+### Hello world in Go (HTTP template)
+
+`hello-classic-go`使用經典的Golang模板進行function構建。OpenFaaS的經典Golang模板為每個傳入請求派生一個進程，這意味著在不同的調用之間不保留狀態。這是與cgi-bin相似的模型，並使用UNIX STDIO管道將請求發送到function並取得響應。
+
+一個更新的Golang模板被重新開發出來，以提供對底層HTTP請求和響應的完全訪問和控制權，從而使OpenFaaS能夠支持以下功能:
+
+* 通過使用HTTP的手法來保持function進程持續保持的容器裡運行以降低延遲/緩存/持久連接的功能
+* 提高OpenFaaS能夠支撐大量的呼叫
+
+要使用此模板，只需將其從模板庫中拉回即可。
+
+```sh
+$ faas-cli template store pull golang-http
+```
+
+![](docs/lab3/pull-golang-http-template.png)
+
+* Scaffold the function
+
+```sh
+$ faas-cli new --lang golang-http hello-http-go --prefix="<your-docker-username-here>"
+```
+![](docs/lab3/hello-http-go.png)
+
+上述命令將創建兩個文件和一個目錄:
+
+```sh
+hello-http-go
+└── handler.go
+
+hello-http-go.yml
+```
+
+下面是YAML文件(`hello-http-go.yml`)的內容:
+
+```yaml
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  hello-http-go:
+    lang: golang-http
+    handler: ./hello-http-go
+    image: <your-docker-username>/hello-http-go:latest
+```
+
+* function的名稱由`functions:`下的鍵值表示，例如: `hello-http-go`
+* 程式語言由`lang`欄位來定義
+* 用於定義新function的文件夾稱為`handler`，該文件夾必須是文件夾而不是文件
+* 新function被打包的Docker映像名稱由`image`欄位來定義
+
+這是`handler.go`文件的內容:
+
+```golang
+package function
+
+import (
+	"fmt"
+	"net/http"
+
+	handler "github.com/openfaas/templates-sdk/go-http"
+)
+
+// Handle a function invocation
+func Handle(req handler.Request) (handler.Response, error) {
+	var err error
+
+	message := fmt.Sprintf("Hello world, input was: %s", string(req.Body))
+
+	return handler.Response{
+		Body:       []byte(message),
+		StatusCode: http.StatusOK,
+	}, err
+}
+```
+
+這個function會使用字串模版`Hello world, input was: %s`來把輸入的資料內嵌成一句歡迎語句。
+
+要了解`go-http`模板的更多詳細信息，請查看以下目錄:
+
+```sh
+template/golang-http/
+├── Dockerfile
+├── function
+│   └── handler.go
+├── go.mod
+├── go.sum
+├── main.go
+├── template.yml
+└── vendor
+    ├── github.com
+    │   └── openfaas
+    │       └── templates-sdk
+    │           ├── go-http
+    │           │   ├── handler.go
+    │           │   └── README.md
+    │           └── LICENSE
+    └── modules.txt
+```
+
+這是function的本機開發的工作流程(build, push & deploy):
+
+```sh
+$ faas-cli up -f hello-http-go.yml
+```
+
+![](docs/lab3/hello-http-go-ui.png)
+
+* 調用你的function
+
+用`faas-cli invoke`調用該function:
+
+```sh
+$ echo "try me again!" | faas-cli invoke hello-http-go
+
+Hello world, input was: try me again!
+```
+
+![](docs/lab3/hello-http-go-invoke.png)
 
 ### Example function: astronaut-finder
 
 我們將創建一個名為`astronaut-finder`的function，該function會隨機提取待在國際太空站（ISS）上某個太空人的名字。
 
 ```sh
-$ faas-cli new --lang python3 astronaut-finder --prefix="<your-docker-username-here>"
+$ faas-cli new --lang golang-http astronaut-finder --prefix="<your-docker-username-here>"
 ```
 
-![](docs/lab3/astronaut-finder-python.png)
+![](docs/lab3/astronaut-finder-golang.png)
 
-這將為我們產生三個文件:
+這將為我們產生下列的文件:
 
 ```sh
-./astronaut-finder/handler.py
+astronaut-finder
+└── handler.go
+
+astronaut-finder.yml
 ```
-
-Function的處理主邏輯-你將獲得帶有原始請求的`req`對象，並且可以將function的結果打印到控制台。
-
-```sh
-./astronaut-finder/requirements.txt
-```
-
-使用此文件列出你要安裝的所有`pip`模組，例如`requests`或`urllib`
-
-```sh
-./astronaut-finder.yml
-```
-
-該文件用於管理function-它具有function的名稱，Docker映像和所需的任何其他自定義的設定。
-
-* 修改 `./astronaut-finder/requirements.txt`
-
-```sh
-requests
-```
-
-這說明該function需要使用名為[requests](http://docs.python-requests.org/en/master/)的第三方模組來通過HTTP訪問特定網站。
 
 * 編寫function的程式碼：
 
@@ -295,40 +389,95 @@ requests
 ```json
 {
   "message": "success",
+  "number": 7,
   "people": [
     {
-      "name": "Sergey Ryzhikov",
-      "craft": "ISS"
+      "craft": "ISS",
+      "name": "Sergey Ryzhikov"
     },
     {
-      "name": "Kate Rubins",
-      "craft": "ISS"
+      "craft": "ISS",
+      "name": "Kate Rubins"
     },
     {
-      "name": "Sergey Kud-Sverchkov",
-      "craft": "ISS"
+      "craft": "ISS",
+      "name": "Sergey Kud-Sverchkov"
+    },
+    {
+      "craft": "ISS",
+      "name": "Mike Hopkins"
+    },
+    {
+      "craft": "ISS",
+      "name": "Victor Glover"
+    },
+    {
+      "craft": "ISS",
+      "name": "Shannon Walker"
+    },
+    {
+      "craft": "ISS",
+      "name": "Soichi Noguchi"
     }
-  ],
-  "number": 3
+  ]
 }
 ```
 
-更新 `handler.py`:
+編輯 `handler.go`:
 
-```python
-import requests
-import random
+```golang
+package function
 
-def handle(req):
-    r = requests.get("http://api.open-notify.org/astros.json")
-    result = r.json()
-    index = random.randint(0, len(result["people"])-1)
-    name = result["people"][index]["name"]
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"math/rand"
+	"net/http"
+	"time"
 
-    return "%s is in space" % (name)
+	handler "github.com/openfaas/templates-sdk/go-http"
+)
+
+// Handle a function invocation
+func Handle(req handler.Request) (handler.Response, error) {
+	var err error
+
+	resp, err := http.Get("http://api.open-notify.org/astros.json")
+	if err != nil {
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, err
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		return handler.Response{
+			StatusCode: http.StatusInternalServerError,
+		}, err
+	}
+
+	var jsonObj map[string]interface{}
+	json.Unmarshal(body, &jsonObj)
+
+	people := jsonObj["people"].([]interface{})
+
+	rand.Seed(time.Now().UnixNano())
+	index := rand.Intn(len(people) - 1)
+
+	astronut := people[index].(map[string]interface{})
+	message := fmt.Sprintf("%v is in space", astronut["name"])
+
+	return handler.Response{
+		Body:       []byte(message),
+		StatusCode: http.StatusOK,
+	}, err
+}
 ```
 
-![](docs/lab3/astronaut-finder-python.png)
+![](docs/lab3/astronaut-finder-ide.png)
 
 > 注意：在此範例中，雖然我們沒有使用到參數`req`，但還是必須將其保留在handle的參數中。
 
@@ -340,22 +489,22 @@ $ faas-cli build -f ./astronaut-finder.yml
 [0] > Building astronaut-finder.
 Clearing temporary build folder: ./build/astronaut-finder/
 Preparing: ./astronaut-finder/ build/astronaut-finder/function
-Building: witlab/astronaut-finder:latest with python3 template. Please wait..
-Sending build context to Docker daemon  18.94kB
-Step 1/29 : FROM openfaas/classic-watchdog:0.18.18 as watchdog
- ---> 8aa8fb60b8b9
-Step 2/29 : FROM python:3-alpine
- ---> 55d14c2b2fc1
-Step 3/29 : ARG ADDITIONAL_PACKAGE
+Building: witlab/astronaut-finder:latest with golang-http template. Please wait..
+Sending build context to Docker daemon  30.72kB
+Step 1/30 : FROM --platform=${TARGETPLATFORM:-linux/amd64} openfaas/of-watchdog:0.8.0 as watchdog
+ ---> 1ebcac6b156c
 ...
 ...
-Successfully built de571855eba5
+tep 30/30 : CMD ["./fwatchdog"]
+ ---> Using cache
+ ---> f8637c76a329
+Successfully built f8637c76a329
 Successfully tagged witlab/astronaut-finder:latest
 Image: witlab/astronaut-finder:latest built.
-[0] < Building astronaut-finder done in 7.75s.
+[0] < Building astronaut-finder done in 0.17s.
 [0] Worker done.
 
-Total build time: 7.75s
+Total build time: 0.17s
 ```
 
 你應該能夠使用下列的命令來找到新的docker映像:
@@ -366,7 +515,9 @@ $ docker image list | grep astronaut-finder
 witlab/astronaut-finder      latest              de571855eba5        5 minutes ago       68.4MB
 ```
 
-> 提示：嘗試將`astronaut-finder.yml`重命名為`stack.yml`並僅調用`faas-cli build`。 `stack.yml`是CLI的預設文件名。
+![](docs/lab3/astronuat-finder-docker-image.png)
+
+> 提示：你也可嘗試將`astronaut-finder.yml`重命名為`stack.yml`並僅調用`faas-cli build`。`stack.yml`是CLI的預設文件名。
 
 推送function映像到Docker hub:
 
@@ -375,14 +526,13 @@ $ faas-cli push -f ./astronaut-finder.yml
 
 [0] > Pushing astronaut-finder [witlab/astronaut-finder:latest].
 The push refers to repository [docker.io/witlab/astronaut-finder]
-4a627f133970: Pushed 
-2677a3734478: Pushed 
-...
-...
-f54730c4d0af: Layer already exists 
-408e53c5e3b2: Layer already exists 
-50644c29ef5a: Layer already exists 
-latest: digest: sha256:358c68414b9c3fa7e691924951e0f88f4ba1c7b9362214111bb7a444903865ce size: 4289
+21874e45fbdb: Layer already exists 
+41052086eb37: Layer already exists 
+1c0df9d1c402: Layer already exists 
+dc25f0b71808: Layer already exists 
+1eb02d25b546: Layer already exists 
+3e207b409db3: Layer already exists 
+latest: digest: sha256:4aa40f16f4488f6acf34b7239db232a64f0bd467191e43fdc1b8d36e406b01cf size: 1579
 [0] < Pushing astronaut-finder [witlab/astronaut-finder:latest] done.
 [0] Worker done.
 ```
@@ -424,45 +574,6 @@ $ kubectl logs deployment/astronaut-finder -n openfaas-fn
 
 ![](docs/lab3/astronaut-finder-logs-k8s.png)
 
-## Troubleshooting: verbose output with `write_debug`
-
-讓我們把function詳細輸出的功能打開。此功能預設是處於關閉狀態，因此我們不會在函數日誌中充滿著許多運行結果的數據-這一點尤其在處理二進制數據結果產出時（在日誌中沒有什麼意義）特別重要。
-
-這是標準的YAML設定:
-
-```yaml
-provider:
-  name: openfaas
-  gateway: http://127.0.0.1:8080
-
-functions:
-  astronaut-finder:
-    lang: python3
-    handler: ./astronaut-finder
-    image: <your-docker-username>/astronaut-finder
-```
-
-編輯該function的YAML文件，並添加"environment"的區塊。
-
-```yaml
-  astronaut-finder:
-    lang: python3
-    handler: ./astronaut-finder
-    image: <your-docker-username>/astronaut-finder
-    environment:
-      write_debug: true
-```
-
-現在，使用`faas-cli deploy -f ./astronaut-finder.yml`來部署你的function。
-
-調用該function，然後再一次檢查日誌以查看function的響應:
-
-```sh
-$ kubectl logs deployment/astronaut-finder -n openfaas-fn
-```
-
-![](docs/lab3/astronaut-finder-debug-log-k8s.png)
-
 ### Managing multiple functions
 
 CLI的YAML文件允許將多個function組合在一起成為堆棧，這在使用一組相關function時非常有用。
@@ -470,13 +581,13 @@ CLI的YAML文件允許將多個function組合在一起成為堆棧，這在使�
 要查看其工作原理，請生成兩個function:
 
 ```sh
-$ faas-cli new --lang python3 first　--prefix="<your-docker-username-here>"
+$ faas-cli new --lang golang-http first
 ```
 
 對於第二個function，使用`--append`旗標:
 
 ```sh
-$ faas-cli new --lang python3 second --prefix="<your-docker-username-here>"　--append=./first.yml　
+$ faas-cli new --lang golang-http second --append=./first.yml
 ```
 
 為了方便起見，讓我們將`first.yml`重命名為`example.yml`。
@@ -494,11 +605,11 @@ provider:
 
 functions:
   first:
-    lang: python3
+    lang: golang-http
     handler: ./first
     image: <your-docker-username>/first
   second:
-    lang: python3
+    lang: golang-http
     handler: ./second
     image: <your-docker-username>/second
 ```
@@ -533,24 +644,7 @@ $ faas-cli build -f ./example.yml --filter=second
 
 如果你有自己的一組分支或自定義模板，則可以將其下拉來與CLI一起使用。
 
-這是獲取使用Debian Linux的Python 3模板的範例。
-
-使用`git` URL來拉取自定義模板:
-
-```sh
-$ faas-cli template pull https://github.com/openfaas-incubator/python3-debian
-```
-
-現在輸入： `faas-cli new --list`
-
-```sh
-$ faas-cli new --list | grep python
-- python
-- python3
-- python3-debian
-```
-
-這些新模板保存在你當前的工作目錄`./templates/`中。
+請參考一篇部落格："[Going Serverless with OpenFaaS and Golang - Building Optimized Templates](https://martinheinz.dev/blog/11)"來詳細瞭解如何創建自己的自定義模板。
 
 #### Custom templates: Template Store
 
@@ -607,11 +701,9 @@ $ faas-cli template store pull node10-express
 
 ```yml
   astronaut-finder:
-    lang: python3
+    lang: golang-http
     handler: ./astronaut-finder
     image: ${DOCKER_USER:-development}/astronaut-finder
-    environment:
-      write_debug: true
 ```
 
 你會注意到`image`屬性已更新為包含變數定義(`DOCKER_USER`)。該值將被具有相同名稱的環境變數的值替換。如果環境變數不存在或為空，則將使用預設值(`development`)。
@@ -635,7 +727,7 @@ export DOCKER_USER=functions
 `faas-cli build -f ./astronaut-finder.yml`
 
 現在輸出應顯示function映像是使用更新的標籤`functions/astronaut-finder:latest`所構建而成的。
- 
+
 ### Custom binaries as functions (optional exercise)
 
 你可以將自定義二進製命令或容器包裝成function，但是大多數時候使用語言模板應涵蓋大多數最常見的情況。
